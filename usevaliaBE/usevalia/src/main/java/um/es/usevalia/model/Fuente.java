@@ -15,7 +15,7 @@ import lombok.Setter;
 public class Fuente {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private int iid;
+    private Long iid;
 
     @Column(name = "EID", length = 10)
     private String eid;

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import um.es.usevalia.model.enums.Permisos;
+import um.es.usevalia.model.enums.Permiso;
 
 @Getter
 @Setter
@@ -17,7 +17,7 @@ public class Catalogo {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @Column(name = "NOMBRE", length = 50, nullable = false)
     private String nombre;
@@ -34,9 +34,11 @@ public class Catalogo {
     @JoinColumn(name = "GRUPO")
     private Grupo grupo;
 
-    private Permisos lectura;
+    @Enumerated(EnumType.STRING)
+    private Permiso lectura;
 
-    private Permisos escritura;
+    @Enumerated(EnumType.STRING)
+    private Permiso escritura;
 
 
 }

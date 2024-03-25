@@ -12,8 +12,9 @@ public class ValorPuntuacion {
     private Long id;
     @Column(name = "nombre", length = 50, nullable = false)
     private String nombre;
-    @Column(name = "escala", nullable = false)
-    private int escala;
+    @ManyToOne
+    @JoinColumn(name = "ESQUEMA_PUNTUACION")
+    private EsquemaPuntuacion escala;
     @Column(name = "tipo", nullable = false)
     private int tipo;
 }

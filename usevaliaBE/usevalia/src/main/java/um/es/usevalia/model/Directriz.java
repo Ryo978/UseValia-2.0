@@ -12,7 +12,7 @@ import lombok.*;
 public class Directriz {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @Column(name = "EID", length = 10)
     private String eid;

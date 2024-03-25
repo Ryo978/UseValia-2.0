@@ -18,7 +18,7 @@ import java.util.List;
 public class Grupo {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @Column(name = "NOMBRE", length = 50, nullable = false)
     private String nombre;

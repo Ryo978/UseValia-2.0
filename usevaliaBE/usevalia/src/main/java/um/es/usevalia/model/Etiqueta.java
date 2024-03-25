@@ -15,7 +15,7 @@ import lombok.Setter;
 public class Etiqueta {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @Column(name = "valor", length = 50, nullable = false)
     private String valor;

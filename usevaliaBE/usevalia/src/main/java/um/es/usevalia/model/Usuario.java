@@ -18,7 +18,7 @@ import java.util.Date;
 public class Usuario {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @Column(name = "NOMBRE", length = 50, nullable = false)
     private String nombre;
@@ -34,4 +34,13 @@ public class Usuario {
 
     @Column(name = "CHANGED")
     private Date changed;
+
+
+    public Usuario(String nombre, String password, String email) {
+        this.nombre = nombre;
+        this.password = password;
+        this.email = email;
+        this.created = new Date();
+        this.changed = new Date();
+    }
 }

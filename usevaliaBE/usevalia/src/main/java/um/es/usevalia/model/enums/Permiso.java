@@ -1,12 +1,12 @@
 package um.es.usevalia.model.enums;
 
-public enum Permisos {
+public enum Permiso {
     PUBLICO("Público"),
     GRUPO("Grupo"),
     PRIVADO("Privado");
     private final String codigo;
 
-    Permisos(String codigo) {
+    Permiso(String codigo) {
         this.codigo = codigo;
     }
 

@@ -29,4 +29,8 @@ public class Puntuacion {
     @JoinColumn(name = "TAREA")
     private Tarea tarea;
 
+    @OneToOne
+    @JoinColumn(name = "IMAGEN")
+    private Imagen imagen;
+
 }

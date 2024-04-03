@@ -1,11 +1,15 @@
 package um.es.usevalia.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import um.es.usevalia.model.enums.Categoria;
 
 @Entity
 @Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "tarea")
 public class Tarea {
 
@@ -16,6 +20,7 @@ public class Tarea {
     @Column(name = "NOMBRE", length = 50, nullable = false)
     private String nombre;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "CATEGORIA", nullable = false)
     private Categoria categoria;
 

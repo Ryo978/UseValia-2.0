@@ -1,21 +1,32 @@
 package um.es.usevalia.model.dto;
 
-import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import um.es.usevalia.model.enums.Categoria;
 
 @AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
-public class AplicacionDTO {
+public class DirectrizDTO {
 
     private Long id;
+
+    private String eid;
+
     private String nombre;
-    private String url;
+
     private String descripcion;
-    private Long categoriaId;
+
+    private int peso;
+
+    private Long padreId;
+
+    private Long grupoId;
+
+    private Long esquemaId;
+
+    //private Long fuente; TODO: Completar primero funcionalidad en la entidad.
 }

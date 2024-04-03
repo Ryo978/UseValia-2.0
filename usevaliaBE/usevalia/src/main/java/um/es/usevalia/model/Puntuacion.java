@@ -1,10 +1,14 @@
 package um.es.usevalia.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "puntuacion")
 public class Puntuacion {
     @Id

@@ -9,7 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EtiquetaDTO {
+public class ImagenDTO {
     private Long id;
-    private String valor;
+
+    private byte[] datosImagen;
+
 }

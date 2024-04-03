@@ -23,22 +23,22 @@ public class Directriz {
     private String descripcion;
 
     @Column(name = "PESO")
-    private int peso;
+    private int peso; //TODO: esto en principio es una clase Prioridad, mandar correo para confirmar.
 
     @ManyToOne
     @JoinColumn(name = "PADRE")
     private Directriz padre;
 
     @ManyToOne
-    private Grupo grupo;
+    private GrupoDirectrices grupo;
 
     @ManyToOne
     private EsquemaPuntuacion esquema;
 
-    @ManyToOne
+    /*@ManyToOne
     @JoinColumn(name = "FUENTE")
     private Fuente fuente;
-
+    */ //TODO: saber si es one to many, o many to one, y que funcionalidad tiene.
 
 
 }

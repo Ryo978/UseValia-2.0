@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "grupo_directrices")
-public class GrupoDirectrices {
+public class GrupoDirectrices { //TODO: hacer DTO, controlador y servicio.
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)

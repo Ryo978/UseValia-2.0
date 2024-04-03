@@ -25,11 +25,15 @@ public class CatalogoService {
     private GrupoService grupoService;
 
     public void addCatalogo(CatalogoDTO catalogoDTO) {
-        repository.save(convertDTOToEntity(catalogoDTO));
+        repository.save(CatalogoMapper.INSTANCE.catalogoDTOToCatalogo(catalogoDTO));
     }
 
     public void deleteCatalogo(CatalogoDTO catalogoDTO) {
-        repository.delete(convertDTOToEntity(catalogoDTO));
+        repository.delete(CatalogoMapper.INSTANCE.catalogoDTOToCatalogo(catalogoDTO));
+    }
+
+    public Catalogo getCatalogo(Long catalogoId) {
+        return repository.findById(catalogoId).orElse(null);
     }
 
     public List<CatalogoDTO> listCatalogo() {
@@ -45,4 +49,6 @@ public class CatalogoService {
         return new Catalogo (catalogoDTO.getId(), catalogoDTO.getNombre(), esquemaPuntuacion, usuario,
                 grupo, catalogoDTO.getLectura(), catalogoDTO.getEscritura());
     }
+
+
 }

@@ -29,4 +29,8 @@ public class AplicacionService {
         return aplicaciones.stream()
                 .map(AplicacionMapper.INSTANCE::aplicacionToAplicacionDTO).toList();
     }
+
+    public Aplicacion getAplicacion(Long id) {
+        return repository.findById(id).orElse(null);
+    }
 }

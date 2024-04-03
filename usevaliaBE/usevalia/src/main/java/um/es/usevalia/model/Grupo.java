@@ -33,7 +33,7 @@ public class Grupo {
             joinColumns = @JoinColumn(name = "ETIQUETA_ID"),
             inverseJoinColumns = @JoinColumn(name = "AUDITORIA_ID")
     )
-    private List<Etiqueta> etiquetas;
+    private List<Etiqueta> etiquetas; //TODO: hacer DTO, controlador y servicio.
 
     @JsonIgnore
     @ManyToMany

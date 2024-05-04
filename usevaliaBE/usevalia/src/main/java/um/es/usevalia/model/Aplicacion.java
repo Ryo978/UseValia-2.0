@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import um.es.usevalia.model.enums.Categoria;
 
 @Getter
@@ -13,6 +15,7 @@ import um.es.usevalia.model.enums.Categoria;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@OnDelete(action = OnDeleteAction.CASCADE)
 @Table(name="aplicacion")
 public class Aplicacion {
     @Id

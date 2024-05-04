@@ -15,7 +15,7 @@ public class Puntuacion {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(name = "PUNTUACION", nullable = false)
-    private int puntuacion;
+    private String puntuacion;
     @ManyToOne
     @JoinColumn(name = "USUARIO")
     private Usuario usuario;

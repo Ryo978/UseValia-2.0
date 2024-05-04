@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Button } from 'antd';
+import { User } from './Entities/User';
+import AlertComponent from './Alert-Component';
+import { register } from '../connections/user-connection';
 
-const RegistrationForm: React.FC = () => {
+const RegistrationForm: React.FC<{ keepAlive: (value: boolean) => void, setUser: (value: User) => void }> = ({ keepAlive, setUser }) => {
     const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
 
     const onFinish = (values: any) => {
+        values.preventDefault();
         console.log('Received values of form:', values);
-        // Aquí puedes realizar la lógica de registro
+        setLoading(true)
+        try {
+            register(values.email, values.password, values.name).then((data: User) => setUser(data));
+            setLoading(false);
+            keepAlive(false)
+        } catch (error:any) {
+            setLoading(false);
+            return AlertComponent(error.message);
+        }
     };
 
-    const onCancel = () => {
-        // Aquí puedes implementar la lógica para volver al login
-    };
 
     return (
         <Form form={form} onFinish={onFinish}>
@@ -34,7 +44,7 @@ const RegistrationForm: React.FC = () => {
 
             <Form.Item
                 name="name"
-                label="Nombre"
+                label="Name"
                 rules={[
                     {
                         required: true,
@@ -47,7 +57,7 @@ const RegistrationForm: React.FC = () => {
 
             <Form.Item
                 name="password"
-                label="Contraseña"
+                label="Password"
                 rules={[
                     {
                         required: true,
@@ -60,7 +70,7 @@ const RegistrationForm: React.FC = () => {
 
             <Form.Item
                 name="confirmPassword"
-                label="Repetir Contraseña"
+                label="Repeat Password"
                 dependencies={['password']}
                 rules={[
                     {
@@ -81,10 +91,10 @@ const RegistrationForm: React.FC = () => {
             </Form.Item>
 
             <Form.Item>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" loading={loading} htmlType="submit">
                     Registrarse
                 </Button>
-                <Button onClick={onCancel}>Cancelar</Button>
+                <Button onClick={() => keepAlive(false)}>Cancelar</Button>
             </Form.Item>
         </Form>
     );

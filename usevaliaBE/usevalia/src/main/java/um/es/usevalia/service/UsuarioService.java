@@ -10,6 +10,7 @@ import um.es.usevalia.model.dto.UsuarioDTO;
 import um.es.usevalia.repository.UsuarioRepository;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UsuarioService {
@@ -18,6 +19,10 @@ public class UsuarioService {
     UsuarioRepository repository;
 
     UsuarioMapper mapper = UsuarioMapper.INSTANCE;
+
+    public List<UsuarioDTO> getUsuarios() {
+        return repository.findAll().stream().map(mapper::usuarioToUsuarioDTO).toList();
+    }
 
     public UsuarioDTO login(String email, String password) throws UsuarioNotFoundException {
         Usuario usuario = repository.findByEmail(email);
@@ -32,11 +37,40 @@ public class UsuarioService {
         if (repository.findByEmail(email) != null) {
             throw new UsuarioDuplicatedException("The email is already in use");
         }
+        usuario.setRol("User");
+        usuario.setChanged(new Date());
         repository.save(usuario);
         return mapper.usuarioToUsuarioDTO(usuario);
     }
 
     public Usuario getUsuario(Long id) {
         return repository.findById(id).orElse(null);
+    }
+
+    public UsuarioDTO getUsuarioDTO(Long id) {
+        return mapper.usuarioToUsuarioDTO(getUsuario(id));
+    }
+
+    public UsuarioDTO updateUsuario(Long id, String nombre, String password) throws UsuarioNotFoundException {
+        Usuario usuario = repository.findById(id).orElse(null);
+        if (usuario == null) {
+            throw new UsuarioNotFoundException("The user does not exist");
+        }
+        usuario.setNombre(nombre);
+        usuario.setPassword(password);
+        usuario.setChanged(new Date());
+        repository.save(usuario);
+        return mapper.usuarioToUsuarioDTO(usuario);
+    }
+
+    public UsuarioDTO updateRol(Long id, String rol) throws UsuarioNotFoundException {
+        Usuario usuario = repository.findById(id).orElse(null);
+        if (usuario == null) {
+            throw new UsuarioNotFoundException("The user does not exist");
+        }
+        usuario.setRol(rol);
+        usuario.setChanged(new Date());
+        repository.save(usuario);
+        return mapper.usuarioToUsuarioDTO(usuario);
     }
 }

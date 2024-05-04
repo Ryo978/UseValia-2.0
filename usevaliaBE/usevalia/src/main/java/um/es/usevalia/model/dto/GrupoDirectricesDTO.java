@@ -13,5 +13,4 @@ public class GrupoDirectricesDTO {
     private Long id;
     private String nombre;
     private Long catalogoid;
-    private Long esquemaid;
 }

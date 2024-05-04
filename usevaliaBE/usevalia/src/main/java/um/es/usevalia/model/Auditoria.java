@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import um.es.usevalia.model.enums.Evaluacion;
 
 import java.util.Date;
 import java.util.List;
@@ -50,7 +51,7 @@ public class Auditoria {
     private Catalogo catalogo;
 
     @Column(name = "EVALUACION", length = 25)
-    private String evaluacion;
+    private Evaluacion evaluacion;
 
     @JsonIgnore
     @ManyToMany

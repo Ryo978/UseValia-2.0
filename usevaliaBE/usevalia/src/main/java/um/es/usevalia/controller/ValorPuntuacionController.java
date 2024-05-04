@@ -2,10 +2,7 @@ package um.es.usevalia.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import um.es.usevalia.model.dto.ValorPuntuacionDTO;
 import um.es.usevalia.service.ValorPuntuacionService;
 
@@ -18,18 +15,33 @@ public class ValorPuntuacionController {
     @Autowired
     ValorPuntuacionService valorPuntuacionService;
 
+    @PostMapping
     @RequestMapping("/add")
     public void addValorPuntuacion(@RequestBody ValorPuntuacionDTO valorPuntuacionDTO){
         valorPuntuacionService.addValorPuntuacion(valorPuntuacionDTO);
     }
 
+    @PostMapping
+    @RequestMapping("/multipleAdd")
+    public void addMultipleValorPuntuacion(@RequestBody List<ValorPuntuacionDTO> valoresPuntuacionDTO){
+        valoresPuntuacionDTO.forEach(valorPuntuacionDTO ->
+                valorPuntuacionService.addValorPuntuacion(valorPuntuacionDTO));
+    }
+    @DeleteMapping
     @RequestMapping("/delete")
     public void deleteValorPuntuacion(@RequestBody ValorPuntuacionDTO valorPuntuacionDTO){
         valorPuntuacionService.deleteValorPuntuacion(valorPuntuacionDTO);
     }
 
+    @DeleteMapping
+    @RequestMapping("/deletebyescala")
+    public void deleteValorPuntuacionByEscala(@RequestParam Long idEscala){
+        valorPuntuacionService.deleteValorPuntuacionByEscala(idEscala);
+    }
+
+    @GetMapping
     @RequestMapping("/listbyescala")
-    public ResponseEntity<List<ValorPuntuacionDTO>> listValorPuntuacionByEscala(@RequestParam int idEscala){
+    public ResponseEntity<List<ValorPuntuacionDTO>> listValorPuntuacionByEscala(@RequestParam Long idEscala){
         List<ValorPuntuacionDTO> list = valorPuntuacionService.listValorPuntuacionByEscala(idEscala);
         return ResponseEntity.ok(list);
     }

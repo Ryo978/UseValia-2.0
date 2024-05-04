@@ -31,5 +31,4 @@ public class GrupoDirectricesService {
         return repository.findByCatalogo_Id(catalogoId);
     }
 
-
 }

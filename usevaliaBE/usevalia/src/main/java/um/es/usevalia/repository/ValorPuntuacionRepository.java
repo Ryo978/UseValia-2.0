@@ -9,5 +9,8 @@ import java.util.List;
 
 public interface ValorPuntuacionRepository extends JpaRepository<ValorPuntuacion, Long> {
     @Query("SELECT v FROM ValorPuntuacion v WHERE v.escala.id = ?1")
-    List<ValorPuntuacion> findByEscalaId(int idEscala);
+    List<ValorPuntuacion> findByEscalaId(Long idEscala);
+
+    @Query("DELETE FROM ValorPuntuacion v WHERE v.escala.id = ?1")
+    void deleteByEscalaId(Long idEscala);
 }

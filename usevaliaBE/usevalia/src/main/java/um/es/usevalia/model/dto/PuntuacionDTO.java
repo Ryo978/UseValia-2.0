@@ -14,7 +14,7 @@ import um.es.usevalia.model.*;
 public class PuntuacionDTO {
 
     private Long id;
-    private int puntuacion;
+    private String puntuacion;
     private Long usuarioId;
 
     private Long auditoriaId;

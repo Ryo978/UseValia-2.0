@@ -14,4 +14,11 @@ public interface PuntuacionRepository extends JpaRepository<Puntuacion, Long> {
 
     @Query("UPDATE Puntuacion p SET p.imagen = ?2 WHERE p.id = ?1")
     void addImage(Long id, Imagen imagen);
+
+    @Query("SELECT COUNT(p) FROM Puntuacion p WHERE p.auditoria.id = ?1")
+    Long getTotalNumberOfPuntuacionesByAuditoriaId(Long auditoriaId);
+
+    @Query("SELECT DISTINCT p.usuario.nombre FROM Puntuacion p WHERE p.auditoria.id = ?1")
+    List<String> getNamesUserByAudit(Long auditId);
+
 }

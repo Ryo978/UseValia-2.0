@@ -2,10 +2,7 @@ package um.es.usevalia.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import um.es.usevalia.mapper.ImagenMapper;
 import um.es.usevalia.model.Imagen;
 import um.es.usevalia.model.dto.ImagenDTO;
@@ -18,16 +15,19 @@ public class ImagenController {
     @Autowired
     private ImagenService service;
 
+    @PostMapping
     @RequestMapping("/add")
     public void addImagen(@RequestBody ImagenDTO imagenDTO){
         service.addImagen(ImagenMapper.INSTANCE.imagenDTOToImagen(imagenDTO));
     }
 
+    @DeleteMapping
     @RequestMapping("/delete")
     public void deleteImagen(@RequestBody ImagenDTO imagenDTO){
         service.deleteImagen(ImagenMapper.INSTANCE.imagenDTOToImagen(imagenDTO));
     }
 
+    @GetMapping
     @RequestMapping("/get")
     public ResponseEntity<ImagenDTO> getImagen(@RequestParam Long id){
         Imagen imagen = service.getImagen(id);

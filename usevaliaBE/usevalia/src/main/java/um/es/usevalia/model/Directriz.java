@@ -23,11 +23,7 @@ public class Directriz {
     private String descripcion;
 
     @Column(name = "PESO")
-    private int peso; //TODO: esto en principio es una clase Prioridad, mandar correo para confirmar.
-
-    @ManyToOne
-    @JoinColumn(name = "PADRE")
-    private Directriz padre;
+    private int peso;
 
     @ManyToOne
     private GrupoDirectrices grupo;

@@ -1,0 +1,14 @@
+export const HEAD_URL = 'http://localhost:3000';
+export const loginURL = HEAD_URL + '/usuario/login';
+export const registerURL = HEAD_URL + '/usuario/register';
+export const appURL = HEAD_URL + '/aplicacion';
+export const grupoURL = HEAD_URL + '/grupo';
+export const schemaScoreURL = HEAD_URL + '/esquemapuntuacion';
+export const valueScoreURL = HEAD_URL + '/valorpuntuacion';
+export const catalogURL = HEAD_URL + '/catalogo';
+export const userURL = HEAD_URL + '/usuario';
+export const grupoDirectricesURL = HEAD_URL + '/grupoDirectrices';
+export const directrizURL = HEAD_URL + '/directriz';
+export const auditURL = HEAD_URL + '/auditoria';
+export const scoreURL = HEAD_URL + '/puntuacion';
+export const taskURL = HEAD_URL + '/tarea';

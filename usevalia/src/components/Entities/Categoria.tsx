@@ -1,0 +1,15 @@
+export enum Categoria {
+    'Buscadores/Portales',
+    'BLogs/informativas',
+    'Foros/Interaccción',
+    'Redes Sociales',
+    'Transacionales',
+    'Comercio electrónico',
+    'Correo electrónico',
+    'Entretenimiento',
+    'Académico',
+    'Colaborativas',
+    'Descargas',
+    'Corporativa/Entidades públicas',
+    'Servicios',
+  }

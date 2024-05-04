@@ -10,4 +10,6 @@ public interface EtiquetaRepository extends JpaRepository<Etiqueta, Long> {
 
     @Query("SELECT e FROM Grupo g JOIN g.etiquetas e WHERE g.id = ?1")
     List<Etiqueta> findByGrupoID(Long grupoid);
+
+    Etiqueta findByValor(String nombre);
 }

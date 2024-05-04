@@ -29,6 +29,9 @@ public class Usuario {
     @Column(name = "EMAIL", length = 80, nullable = false, unique = true)
     private String email;
 
+    @Column(name = "ROL", length = 50)
+    private String rol;
+
     @CreatedDate
     private Date created;
 

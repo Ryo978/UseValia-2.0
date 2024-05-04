@@ -41,16 +41,26 @@ public class DirectrizService {
         return DirectrizMapper.INSTANCE.directrizToDirectrizDTO(getDirectriz(directrizId));
     }
 
+    public Long getTotalBasicByCatalog(Long catalogId) {
+        return repository.getTotalBasicByCatalog(catalogId);
+    }
+
+    public Long getTotalByCatalog(Long catalogId) {
+        return repository.getTotalByCatalog(catalogId);
+    }
+
     private Directriz convertDTOtoEntity(DirectrizDTO directrizDTO) {
         GrupoDirectrices grupo = grupoDirectricesService.getGrupoDirectrices(directrizDTO.getGrupoId());
         EsquemaPuntuacion esquema = esquemaPuntuacionService.getEsquemaPuntuacion(directrizDTO.getEsquemaId());
-        Directriz padre = null;
-        if (directrizDTO.getPadreId() != null)
-            padre = repository.findById(directrizDTO.getPadreId()).orElse(null);
 
         return new Directriz(directrizDTO.getId(), directrizDTO.getEid(), directrizDTO.getNombre(),
-                directrizDTO.getDescripcion(), directrizDTO.getPeso(), padre, grupo, esquema);
+                directrizDTO.getDescripcion(), directrizDTO.getPeso(), grupo, esquema);
     }
 
 
+    public void multipleAddDirectriz(List<DirectrizDTO> directrizDTOList) {
+        for (DirectrizDTO directrizDTO : directrizDTOList) {
+            addDirectriz(directrizDTO);
+        }
+    }
 }

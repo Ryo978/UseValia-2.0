@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import um.es.usevalia.mapper.TareaMapper;
 import um.es.usevalia.model.Tarea;
 import um.es.usevalia.model.dto.TareaDTO;
+import um.es.usevalia.model.enums.Categoria;
 import um.es.usevalia.repository.TareaRepository;
 
 import java.util.List;
@@ -36,5 +37,9 @@ public class TareaService {
     public List<TareaDTO> listByCategoria(String categoria) {
         List<Tarea> tareas = repository.findByCategoriaId(categoria);
         return tareas.stream().map(TareaMapper.INSTANCE::tareaToTareaDTO).toList();
+    }
+
+    public long getTotalByCategoria(Categoria categoria) {
+        return repository.getTotalByCategoria(categoria);
     }
 }

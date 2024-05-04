@@ -27,7 +27,7 @@ public class ValorPuntuacionService {
         repository.delete(ValorPuntuacionMapper.INSTANCE.valorPuntuacionDTOToValorPuntuacion(valorPuntuacionDTO));
     }
 
-    public List<ValorPuntuacionDTO> listValorPuntuacionByEscala(int idEscala) {
+    public List<ValorPuntuacionDTO> listValorPuntuacionByEscala(Long idEscala) {
         return repository.findByEscalaId(idEscala).stream()
                 .map(ValorPuntuacionMapper.INSTANCE::valorPuntuacionToValorPuntuacionDTO).toList();
     }
@@ -37,5 +37,9 @@ public class ValorPuntuacionService {
                 esquemaPuntuacionService.getEsquemaPuntuacion(valorPuntuacionDTO.getEscalaId());
         return new ValorPuntuacion(valorPuntuacionDTO.getId(), valorPuntuacionDTO.getNombre(),
                 esquema, valorPuntuacionDTO.isTipo());
+    }
+
+    public void deleteValorPuntuacionByEscala(Long idEscala) {
+        repository.deleteByEscalaId(idEscala);
     }
 }

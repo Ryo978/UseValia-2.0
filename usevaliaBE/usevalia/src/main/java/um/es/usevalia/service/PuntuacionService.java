@@ -37,4 +37,12 @@ public class PuntuacionService {
         }
         repository.addImage(id, ImagenMapper.INSTANCE.imagenDTOToImagen(imagenDTO));
     }
+
+    public Long getTotalByAudit(Long auditId) {
+        return repository.getTotalNumberOfPuntuacionesByAuditoriaId(auditId);
+    }
+
+    public List<String> getNamesUserByAudit(Long auditId) {
+        return repository.getNamesUserByAudit(auditId);
+    }
 }

@@ -27,4 +27,13 @@ public enum Categoria {
         return codigo;
     }
 
+    public static Categoria fromString(String text) {
+        for (Categoria b : Categoria.values()) {
+            if (b.codigo.equalsIgnoreCase(text)) {
+                return b;
+            }
+        }
+        return null;
+    }
+
 }

@@ -17,5 +17,5 @@ public class AplicacionDTO {
     private String nombre;
     private String url;
     private String descripcion;
-    private Long categoriaId;
+    private Categoria categoria;
 }

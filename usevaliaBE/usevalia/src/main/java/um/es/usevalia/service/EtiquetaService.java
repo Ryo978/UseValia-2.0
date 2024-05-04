@@ -26,7 +26,10 @@ public class EtiquetaService {
     }
 
     public List<Etiqueta> getByGrupo(Long grupoid) {
-        return repository.findByGrupoDirectrices_Id(grupoid);
+        return repository.findByGrupoID(grupoid);
     }
 
+    public Etiqueta getByValor(String nombre) {
+        return repository.findByValor(nombre);
+    }
 }

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import um.es.usevalia.model.enums.Evaluacion;
+
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +33,7 @@ public class AuditoriaDTO {
 
     private Long catalogoId;
 
-    private String evaluacion;
+    private Evaluacion evaluacion;
 
     private List<UsuarioDTO> usuarios;
 }

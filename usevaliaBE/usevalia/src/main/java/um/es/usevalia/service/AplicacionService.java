@@ -33,4 +33,12 @@ public class AplicacionService {
     public Aplicacion getAplicacion(Long id) {
         return repository.findById(id).orElse(null);
     }
+
+    public AplicacionDTO getAplicacionDTO(Long id) {
+        return AplicacionMapper.INSTANCE.aplicacionToAplicacionDTO(getAplicacion(id));
+    }
+
+    public Boolean isEditable(Long aplicacionId) {
+        return repository.isEditable(aplicacionId) != null;
+    }
 }

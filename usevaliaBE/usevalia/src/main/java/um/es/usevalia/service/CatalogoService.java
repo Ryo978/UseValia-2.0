@@ -24,8 +24,9 @@ public class CatalogoService {
     @Autowired
     private GrupoService grupoService;
 
-    public void addCatalogo(CatalogoDTO catalogoDTO) {
-        repository.save(CatalogoMapper.INSTANCE.catalogoDTOToCatalogo(catalogoDTO));
+    public CatalogoDTO addCatalogo(CatalogoDTO catalogoDTO) {
+       Catalogo catalogo = repository.save(CatalogoMapper.INSTANCE.catalogoDTOToCatalogo(catalogoDTO));
+       return CatalogoMapper.INSTANCE.catalogoToCatalogoDTO(catalogo);
     }
 
     public void deleteCatalogo(CatalogoDTO catalogoDTO) {
@@ -40,6 +41,9 @@ public class CatalogoService {
         List<Catalogo> catalogos = repository.findAll();
         return catalogos.stream().map(CatalogoMapper.INSTANCE::catalogoToCatalogoDTO).toList();
     }
+    public CatalogoDTO getCatalogoDTO(Long catalogoId) {
+        return CatalogoMapper.INSTANCE.catalogoToCatalogoDTO(getCatalogo(catalogoId));
+    }
 
     private Catalogo convertDTOToEntity(CatalogoDTO catalogoDTO) {
         Usuario usuario = usuarioService.getUsuario(catalogoDTO.getAutorid());
@@ -49,6 +53,7 @@ public class CatalogoService {
         return new Catalogo (catalogoDTO.getId(), catalogoDTO.getNombre(), esquemaPuntuacion, usuario,
                 grupo, catalogoDTO.getLectura(), catalogoDTO.getEscritura());
     }
+
 
 
 }

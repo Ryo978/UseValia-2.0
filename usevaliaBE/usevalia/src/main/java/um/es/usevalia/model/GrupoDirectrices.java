@@ -23,9 +23,4 @@ public class GrupoDirectrices { //TODO: hacer DTO, controlador y servicio.
     @JoinColumn(name = "CATALOGO")
     private Catalogo catalogo;
 
-    @ManyToOne
-    @JoinColumn(name = "ESQUEMA")
-    private EsquemaPuntuacion esquema;
-
-
 }

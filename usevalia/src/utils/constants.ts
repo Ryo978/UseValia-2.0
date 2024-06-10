@@ -1,4 +1,4 @@
-export const HEAD_URL = 'http://localhost:3000';
+export const HEAD_URL = 'http://localhost:8085/api';
 export const loginURL = HEAD_URL + '/usuario/login';
 export const registerURL = HEAD_URL + '/usuario/register';
 export const appURL = HEAD_URL + '/aplicacion';

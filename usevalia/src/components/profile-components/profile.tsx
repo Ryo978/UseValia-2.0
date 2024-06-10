@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { User } from '../Entities/User';
 import AlertComponent from '../Alert-Component';
 import { getLastTimeChanged, updateUser } from '../../connections/user-connection';
+import { connect } from 'react-redux';
+import { setUser } from '../../redux/actions';
 
 interface ProfileProps {
     userProfile: User;
@@ -22,7 +24,7 @@ const Profile:React.FC<{ user: any, setUser: any }> = ({ user, setUser}) => {
                     setUserProfile({ userProfile: user, changed: data });
                 });
             } catch (error:any) {
-                AlertComponent(error.message);
+                message.error(error.message);
             }
         }
     }, [userProfile, user]);
@@ -35,7 +37,7 @@ const Profile:React.FC<{ user: any, setUser: any }> = ({ user, setUser}) => {
                 setUserProfile({ userProfile: data, changed: new Date() });
             });
             } catch (error:any) {
-                AlertComponent(error.message);
+                message.error(error.message);
             }
         });
 
@@ -46,22 +48,25 @@ const Profile:React.FC<{ user: any, setUser: any }> = ({ user, setUser}) => {
         <Form form={form} onFinish={handleEditUser}>
             <Form.Item
                 label="Name"
-                name="name"
+                name="nombre"
                 rules={[{ required: true, message: 'Please input your name!' }]}
+                initialValue={user.nombre}
             >
-                <Input value={userProfile?.userProfile.nombre} contentEditable={goingToEdit} />
+                <Input disabled={!goingToEdit} />
             </Form.Item>
             <Form.Item
                 label="Email"
                 name="email"
+                initialValue={user.email}
             >
-                <Input value={userProfile?.userProfile.email} contentEditable={false} />
+                <Input disabled={true} />
             </Form.Item>
             <Form.Item
                 label="Role"
-                name="role"   
+                name="role"  
+                initialValue={user.rol} 
             >
-                <Input value={userProfile?.userProfile.rol} contentEditable={false} />
+                <Input disabled={true} />
             </Form.Item>
             <Form.Item
                 name="password"
@@ -100,17 +105,24 @@ const Profile:React.FC<{ user: any, setUser: any }> = ({ user, setUser}) => {
                 <Input.Password />
             </Form.Item>
             
-            <Button type="primary" onClick={() => setGoingToEdit(true)} hidden={goingToEdit}>Edit information</Button>
-            <Button
+            {!goingToEdit &&
+                <Button type="primary" onClick={() => setGoingToEdit(true)} hidden={goingToEdit}>Edit information</Button>}
+            {goingToEdit && <Button
                 type="primary"
                 onClick={() => handleEditUser()} 
-                hidden={!goingToEdit}
                 htmlType='submit'>
                     Submit
-            </Button>
-            <Button type="primary" onClick={() => setGoingToEdit(false)} hidden={!goingToEdit}>Cancel</Button>
+            </Button>}
+            {goingToEdit &&
+                <Button type="primary" onClick={() => setGoingToEdit(false)} >Cancel</Button> }
         </Form>
         )
 };
 
-export default Profile;
+const mapStateToProps = (state: any) => {
+    return {
+        user: state.user,
+    };
+};
+
+export default connect(mapStateToProps, { setUser }) (Profile);

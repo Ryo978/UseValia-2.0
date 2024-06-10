@@ -20,7 +20,7 @@ public class CatalogoDTO {
     private Long esquemaid;
     private Long autorid;
     private Long grupoid;
-    private Permiso lectura;
-    private Permiso escritura;
+    private String lectura;
+    private String escritura;
 
 }

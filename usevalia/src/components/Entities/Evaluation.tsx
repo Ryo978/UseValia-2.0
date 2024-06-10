@@ -1,5 +1,5 @@
 export enum Evaluation {
     BASIC = 'Basic',
-    STANDART = 'Standart',
+    STANDARD = 'Standard',
     TASKS = 'Tasks',
 }

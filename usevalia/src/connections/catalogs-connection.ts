@@ -1,135 +1,155 @@
+import axios from "axios";
 import { Catalog } from "../components/Entities/Catalog";
 import { Directriz, GrupoDirectrices } from "../components/Entities/Directrices";
 import { getAuth } from "../utils/auth";
 import { catalogURL, directrizURL, grupoDirectricesURL } from "../utils/constants";
 
 export const getCatalogs = async (): Promise<Catalog[]> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(catalogURL+'/list', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(catalogURL+'/list',
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar los Catálogos');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading catalogs failed');
     }
+}
 
-    return response.json();
+export const getCatalogsByLectura = async (id: number): Promise<Catalog[]> => {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(catalogURL+'/listByLectura?userId='+id,
+        {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading catalogs failed');
+    }
+}
+
+export const getCatalogsByEscritura = async (id: number): Promise<Catalog[]> => {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(catalogURL+'/listByEscritura?userId='+id,
+        {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading catalogs failed');
+    }
 }
 
 export const addCatalog = async (catalog: Catalog): Promise<Catalog> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(catalogURL+'/add', {
-        method: 'POST',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.post(catalogURL+'/add',
+        catalog,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(catalog),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al agregar el Catálogo');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to add catalog');
     }
+}
 
-    return response.json();
+export const deleteCatalog = async (id: number): Promise<void> => {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.delete(catalogURL+'/delete?id='+id,
+        {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to delete catalog');
+    }
 }
 
 export const getCatalog = async (id: number): Promise<Catalog> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(catalogURL+'/get', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(catalogURL+'/get?catalogoId='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar el Catálogo');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get catalog');
     }
-
-    return response.json();
 }
 
 
 //Section GrupoDirectrices
 export const getGrupoDirectricesByCatalogo = async (id:number): Promise<GrupoDirectrices[]> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(grupoDirectricesURL+'/listByCatalogo', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(grupoDirectricesURL+'/listByCatalogo?catalogoId='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar los Grupos de Directrices');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading groups failed');
     }
-
-    return response.json();
 }
 
 export const addGrupoDirectrices = async (grupoDirectrices: GrupoDirectrices): Promise<GrupoDirectrices> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(grupoDirectricesURL+'/add', {
-        method: 'POST',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.post(grupoDirectricesURL+'/add',
+        grupoDirectrices,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(grupoDirectrices),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al agregar el Grupo de Directrices');
+            'xauthtoken': token,
+        }});
+        return response.data;
     }
-
-    return response.json();
+    catch (error:any) {
+        throw new Error('Failed to add group');
+    }
 }
 
 
 //Section Directrices
 
 export const getDirectricesByGrupoDirectrices = async (id:number): Promise<Directriz[]> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(directrizURL+'/listByGrupo', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(directrizURL+'/listByGrupo?grupoid='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar las Directrices');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading directrices failed');
     }
-
-    return response.json();
 }
 
 export const multipleAddDirectrices = async (directrices: Directriz[]): Promise<Directriz[]> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(directrizURL+'/multipleAdd', {
-        method: 'POST',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.post(directrizURL+'/multipleAdd',
+        directrices,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(directrices),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al agregar las Directrices');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to add directrices');
     }
-
-    return response.json();
 }
 

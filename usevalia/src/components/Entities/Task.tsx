@@ -1,7 +1,7 @@
 import { Categoria } from "./Categoria";
 
 export interface Task {
-    id: number | undefined,
+    id: number,
     nombre: string,
     categoria: Categoria,
 }

@@ -17,5 +17,5 @@ public class TareaDTO {
 
     private String nombre;
 
-    private Categoria categoria;
+    private String categoria;
 }

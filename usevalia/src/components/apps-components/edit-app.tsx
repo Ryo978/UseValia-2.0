@@ -1,16 +1,29 @@
-import React from 'react';
-import { Form, Input, Button, Select, App, Alert } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Button, Select, App, Alert, Modal, message } from 'antd';
 import { Application } from '../Entities/Application';
 import { Categoria } from '../Entities/Categoria';
 import AppConnection from '../../connections/apps-connection';
 import AlertComponent from '../Alert-Component';
 
 const EditApp: React.FC<{ app?: Application }> = ({ app }) => {
+    const [form] = Form.useForm();
+
+    const [application, setApplication] = useState<Application>();
+
+    useEffect(() => {
+        if (app?.id !== application?.id) {
+            try{
+                setApplication(app);
+                form.setFieldsValue(app);
+            } catch (error:any) {
+                message.error('Loading application failed');
+            }    
+        }
+    }, [app, application, form]);
     
     const onFinish = (values: any) => {
-      
         let aplicacion : Application = {
-            id: app?.id,
+            id: app?.id || 0,
             nombre: values.nombre,
             categoria: values.categoria,
             url: values.url,
@@ -18,13 +31,20 @@ const EditApp: React.FC<{ app?: Application }> = ({ app }) => {
         }
         try {
             AppConnection.add(aplicacion);
+            Modal.success({
+                title: 'App added',
+                content: 'The app has been added successfully',
+                onOk() {
+                    window.location.reload();
+                }
+            });
         } catch (error:any) {
-            return AlertComponent(error.message);
+            return message.error('Adding app failed');
         }
     };
 
     return (
-        <Form onFinish={onFinish} initialValues={app}>
+        <Form onFinish={onFinish} form={form} >
             <Form.Item
                 label="App name"
                 name="nombre"

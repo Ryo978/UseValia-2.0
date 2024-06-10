@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Modal, Space, Input } from 'antd';
+import { Table, Button, Modal, Space, Input, message } from 'antd';
 import { DeleteOutlined, FilterOutlined } from '@ant-design/icons';
 import { ScoreSchema } from '../Entities/ScoreSchema';
 import { ScoreValue } from '../Entities/ScoreValue';
@@ -18,38 +18,44 @@ const ScoreScalesPage: React.FC<{ user: any }> = ({ user }) => {
     const [scores, setScores] = useState<Score[]>([]);
     const [filteredScores, setFilteredScores] = useState<Score[]>([]);
     const [searchTextName, setSearchTextName] = useState<string>('');
+    const [searched, setSearched] = useState<boolean>(false);
     const [scorelength, setScoreLength] = useState<number>(0);
 
     useEffect(() => {
-        if (scores.length === 0 || scores.length !== scorelength) {
-        let schema: ScoreSchema[];
-        let value: ScoreValue[];
-        let scoreArray: Score[] = [];
-        schemaList().then((data: ScoreSchema[]) => {
-            schema = data;
-            schema.forEach((element: ScoreSchema) => {
-                valueScoreList(element.id as number).then((data: ScoreValue[]) => {
-                    value = data;
-                    scoreArray.push({
-                            id: element.id as number,
-                            scoreName: element.nombre,
-                            description: element.descripcion,
-                            values: value.map(v => v.nombre),
-                        },
-                    );
-                    
-                });
-            });
-        });
-        setScoreLength(scoreArray.length);
-        setScores(scoreArray);
-        setFilteredScores(scoreArray);
-    }
-        
-    }, [scores, scorelength]);
+        const fetchData = async () => {
+            let schema: ScoreSchema[];
+            let value: ScoreValue[];
+
+            schema = await schemaList();
+            const scoreArray = await Promise.all(schema.map(async (element) => {
+                const value = await valueScoreList(element.id as number);
+
+                return {
+                    id: element.id as number,
+                    scoreName: element.nombre,
+                    description: element.descripcion,
+                    values: value.map(v => v.nombre),
+                };
+            }));
+            setSearched(true);
+            setScoreLength(scoreArray.length);
+            setScores(scoreArray);
+            setFilteredScores(scoreArray);
+        };
+        if ((scores.length === 0 && !searched) || scores.length !== scorelength) {
+            try{
+                fetchData();
+            } catch (error) {
+                message.error('Loading scores failed');
+            }
+        }
+    }, [scores, scorelength, searched]);
 
     const handleSearch = () => {
-
+        if (searchTextName === '') {
+            setFilteredScores(scores);
+            return;
+        }
         const filteredValue = filteredScores.filter(scs => 
             scs.scoreName.toLowerCase().includes(searchTextName.toLowerCase()));
         setFilteredScores(filteredValue);
@@ -62,22 +68,29 @@ const ScoreScalesPage: React.FC<{ user: any }> = ({ user }) => {
     const handleDeleteRow = (index: number) => {
         Modal.confirm({
             title: 'Delete Score',
-            content: '¿Estás seguro de que quieres eliminar este Esquema de puntuación?',
-            onOk() {
-                deleteScoreValues(filteredScores[index].id).then(() => {
-                    schemaDelete(filteredScores[index].id).then(() => {
-                        setScores(scores.filter((sc, i) => sc.id !== filteredScores[index].id));
+            content: 'Are you sure you want to delete the Score?',
+            async onOk() {
+                try{
+                    await deleteScoreValues(filteredScores[index].id).then(() => {
+                        schemaDelete(filteredScores[index].id).then(() => {
+                            setScores(scores.filter((sc, i) => sc.id !== filteredScores[index].id));
+                            setSearched(false);
+                        });
                     });
-                });
+                } catch (error) {
+                    message.error('Failed to delete score');
+                }
             },
         });
     };
     const handleAdd = () => {
-        return (
-            <Modal title="Add Score"  footer={null}>
-                <ScoreAddForm />
-            </Modal>
-        )
+        return Modal.info({
+            title: 'Add Score',
+            content: <ScoreAddForm />,
+            footer: null,
+            closable: true,
+            icon: null,
+        });
     }
 
     const columns = [
@@ -131,7 +144,7 @@ const ScoreScalesPage: React.FC<{ user: any }> = ({ user }) => {
         <div>
             <h1>Score Scales</h1>
             <Button type="primary" onClick={() => handleAdd()}>Add Score Scales</Button>
-            <Table dataSource={filteredScores} columns={columns} />
+            <Table dataSource={filteredScores} columns={columns} pagination={false} />
         </div>
     );
 };

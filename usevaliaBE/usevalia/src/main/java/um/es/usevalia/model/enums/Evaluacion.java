@@ -2,7 +2,7 @@ package um.es.usevalia.model.enums;
 
 public enum Evaluacion {
     BASIC("Basic"),
-    STANDART("Standart"),
+    STANDARD("Standard"),
     TASKS("Tasks");
     private final String codigo;
 
@@ -12,6 +12,15 @@ public enum Evaluacion {
 
     public String getCodigo() {
         return codigo;
+    }
+
+    public static Evaluacion fromString(String text) {
+        for (Evaluacion b : Evaluacion.values()) {
+            if (b.codigo.equalsIgnoreCase(text)) {
+                return b;
+            }
+        }
+        return null;
     }
 
 }

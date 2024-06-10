@@ -1,183 +1,286 @@
+import axios from "axios";
 import { Audit } from "../components/Entities/Audit";
 import { Categoria } from "../components/Entities/Categoria";
+import { PieChart, ScoreChart } from "../components/Entities/Chart";
+import { Imagen } from "../components/Entities/Imagen";
+import { Score, ScoreValue } from "../components/Entities/ScoreValue";
 import { Task } from "../components/Entities/Task";
 import { getAuth } from "../utils/auth";
 import { auditURL, scoreURL, taskURL } from "../utils/constants";
 
 
 export const listAudits = async () : Promise<Audit[]> => {
-    const token = getAuth() ?? '';
-    const response = await fetch(auditURL+'/list', {
-        method: 'GET',
-        headers: {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(auditURL+'/list',
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar las listas de Auditorias.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading audits failed');
     }
-
-    return response.json();
 }
 
 export const listAuditByUser = async (id: number) : Promise<Audit[]> => {
-    const token = getAuth() ?? '';
-    const response = await fetch(auditURL+'/listByUser', {
-        method: 'GET',
-        headers: {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(auditURL+'/listByUser?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar las listas de Auditorias.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading audits failed');
     }
+}
 
-    return response.json();
+export const addAudit = async (audit: Audit) : Promise<Audit> => {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.post(auditURL+'/add', 
+        audit,
+        {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to add audit');
+    }
 }
 
 export const getAudit = async (id: number) : Promise<Audit> => {
-    const token = getAuth() ?? '';
-    const response = await fetch(auditURL+'/get', {
-        method: 'GET',
-        headers: {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(auditURL+'/get?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar la Auditoria.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get audit');
     }
-
-    return response.json();
 }
 
 export const getEvaluationStatus = async (id: number) : Promise<Boolean> =>  {
-    const token = getAuth() ?? '';
-    const response = await fetch(auditURL+'/getEvaluationStatus', {
-        method: 'GET',
-        headers: {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(auditURL+'/getEvaluationComplete?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar el estado de evaluación.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get evaluation status');
     }
-
-    return response.json();
 }
 
 export const closeAudit = async (id: number) : Promise<void> => {
-    const token = getAuth() ?? '';
-    const response = await fetch(auditURL+'/closeAudit', {
-        method: 'POST',
-        headers: {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.post(auditURL+'/closeAudit?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al cerrar la Auditoria.');
+            'xauthtoken': token,
+        }});
+    } catch (error:any) {
+        throw new Error('Failed to close audit');
     }
 }
 
 export const openAudit = async (id: number) : Promise<void> => {
-    const token = getAuth() ?? '';
-    const response = await fetch(auditURL+'/openAudit', {
-        method: 'POST',
-        headers: {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.post(auditURL+'/openAudit?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al abrir la Auditoria.');
+            'xauthtoken': token,
+        }});
+    } catch (error:any) {
+        throw new Error('Failed to open audit');
     }
 }
 
 export const deleteAudit = async (id: number) : Promise<void> => {
-    const token = getAuth() ?? '';
-    const response = await fetch(auditURL+'/delete', {
-        method: 'DELETE',
-        headers: {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.delete(auditURL+'/delete?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al eliminar la Auditoria.');
+            'xauthtoken': token,
+        }});
+    } catch (error:any) {
+        throw new Error('Failed to delete audit');
     }
 }
 
 export const getAuditReport = async (id: number) : Promise<Response> => {
-    const token = getAuth() ?? '';
-    const response = await fetch(auditURL+'/getAuditReport', {
-        method: 'GET',
-        headers: {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(auditURL+'/getAuditReport?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al obtener el informe de la Auditoria.');
+            'Accept': 'application/pdf',
+            'xauthtoken': token,
+        }, responseType: 'blob'});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get audit report');
     }
+}
 
-    return response;
+export const getPieChart = async (id: number) : Promise<PieChart> => {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(auditURL+'/getPieChart?id='+id,
+        {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get pie chart');
+    }
+}
+
+export const getScoreChart = async (id: number) : Promise<ScoreChart> => {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(auditURL+'/getScoreChart?id='+id,
+        {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get score chart');
+    }
 }
 
 //TASKS CALLS
 
 export const listByCategoria = async (categoria: Categoria): Promise<Task[]> => {
-    const token = getAuth() ?? '';
-    const response = await fetch(taskURL+'/listByCategoria', {
-        method: 'GET',
-        headers: {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(taskURL+'/listByCategoria?categoria='+categoria,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(categoria),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar las tareas por categoría.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading tasks failed');
     }
-
-    return response.json();
 } 
 
 //SCORE CALLS
 
 export const getNamesByAudit = async (id: number) : Promise<string[]> => {
-    const token = getAuth() ?? '';
-    const response = await fetch(scoreURL+'/getNamesUserByAudit', {
-        method: 'GET',
-        headers: {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(scoreURL+'/getNamesUserByAudit?auditId='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar los nombres de los usuarios.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get names by audit');
     }
-
-    return response.json();
 }
+
+export const listScoreByUser = async (id: number, auditId: number) : Promise<Score[]> => {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(scoreURL+'/listByUser?userId='+id + '&auditId='+auditId,
+        {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading scores failed');
+    }
+}
+
+export const listScoreByTask = async (idUser: number, idTask: number, auditId: number) : Promise<Score[]> => {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(scoreURL+'/listByTask?taskId='+idTask+'&userId='+idUser + '&auditId=+'+auditId,
+        {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading scores failed');
+    }
+}
+
+export const addScore = async (score: Score) : Promise<Score> => {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.post(scoreURL+'/add',
+        score,
+            {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to add score');
+    }
+}
+
+export const getImagenByScore = async (idPuntuacion: number) : Promise<Imagen> => {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.get(scoreURL+'/getImagen?idPuntuacion='+idPuntuacion,
+        {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        const { id, datosImagen } = response.data;
+
+        // Verifica el tipo de datosImagen y transforma si es necesario
+        let byteArray: number[];
+        if (typeof datosImagen === 'string') {
+            // Si llega como string, asume que es base64 y decodifícalo
+            const byteCharacters = atob(datosImagen);
+            byteArray = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteArray[i] = byteCharacters.charCodeAt(i);
+            }
+        } else if (Array.isArray(datosImagen) && datosImagen.every(item => typeof item === 'number')) {
+            // Si llega como un array de números, úsalo directamente
+            byteArray = datosImagen;
+        } else {
+            throw new Error('Formato de datosImagen no soportado');
+        }
+
+        return { id, datosImagen: byteArray };
+    } catch (error:any) {
+        throw new Error('Failed to get image by score');
+    }
+}
+
+export const addImagen = async (idAudit: number, imagen: Imagen) : Promise<Imagen> => {
+    try{
+        const token = getAuth() ?? '';
+        let response = await axios.post(scoreURL+'/addImage?id='+idAudit,
+        imagen,
+            {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to add image');
+    }
+}
+

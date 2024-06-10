@@ -7,7 +7,6 @@ import um.es.usevalia.model.dto.EtiquetaDTO;
 
 @Mapper
 public interface EtiquetaMapper {
-    EtiquetaMapper INSTANCE = Mappers.getMapper(EtiquetaMapper.class);
 
     EtiquetaDTO etiquetaToEtiquetaDTO(Etiqueta etiqueta);
 

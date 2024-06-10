@@ -1,5 +1,6 @@
 package um.es.usevalia.mapper;
 
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -11,20 +12,12 @@ import um.es.usevalia.service.*;
 @Mapper
 public interface PuntuacionMapper {
 
-    PuntuacionMapper INSTANCE = Mappers.getMapper(PuntuacionMapper.class);
-
-    UsuarioService usuarioService = new UsuarioService();
-    AuditoriaService auditoriaService = new AuditoriaService();
-    DirectrizService directrizService = new DirectrizService();
-    TareaService tareaService = new TareaService();
-
-    ImagenService imagenService = new ImagenService();
 
 
     @Mapping(target = "id", ignore = false)
     @Mapping(target = "usuarioId", source = "usuario.id")
     @Mapping(target = "auditoriaId", source = "auditoria.id")
-    @Mapping(target = "DirectrizId", source = "directriz.id")
+    @Mapping(target = "directrizId", source = "directriz.id")
     @Mapping(target = "tareaId", source = "tarea.id")
     @Mapping(target = "imagenId", source = "imagen.id")
     PuntuacionDTO puntuacionToPuntuacionDTO(Puntuacion puntuacion);
@@ -32,33 +25,38 @@ public interface PuntuacionMapper {
 
     @Mapping(source = "usuarioId", target = "usuario", qualifiedByName = "findByIdUsuario")
     @Mapping(source = "auditoriaId", target = "auditoria", qualifiedByName = "findByIdAuditoria")
-    @Mapping(source = "DirectrizId", target = "directriz", qualifiedByName = "findByIdDirectriz")
+    @Mapping(source = "directrizId", target = "directriz", qualifiedByName = "findByIdDirectriz")
     @Mapping(source = "tareaId", target = "tarea", qualifiedByName = "findByIdTarea")
     @Mapping(source = "imagenId", target = "imagen", qualifiedByName = "findByIdImagen")
-    Puntuacion puntuacionDTOToPuntuacion(PuntuacionDTO puntuacion);
+    Puntuacion puntuacionDTOToPuntuacion(PuntuacionDTO puntuacion,
+                                         @Context UsuarioService usuarioService,
+                                         @Context AuditoriaService auditoriaService,
+                                         @Context DirectrizService directrizService,
+                                         @Context TareaService tareaService,
+                                         @Context ImagenService imagenService);
 
     @Named("findByIdUsuario")
-    default Usuario findByIdUsuario(Long usuarioId) {
+    default Usuario findByIdUsuario(Long usuarioId, @Context UsuarioService usuarioService) {
         return usuarioService.getUsuario(usuarioId);
     }
 
     @Named("findByIdAuditoria")
-    default Auditoria findByIdAuditoria(Long auditoriaId) {
+    default Auditoria findByIdAuditoria(Long auditoriaId, @Context AuditoriaService auditoriaService) {
         return auditoriaService.getAuditoria(auditoriaId);
     }
 
     @Named("findByIdDirectriz")
-    default Directriz findByIdDirectriz(Long directrizId) {
+    default Directriz findByIdDirectriz(Long directrizId, @Context DirectrizService directrizService) {
         return directrizService.getDirectriz(directrizId);
     }
 
     @Named("findByIdTarea")
-    default Tarea findByIdTarea(Long tareaId) {
+    default Tarea findByIdTarea(Long tareaId, @Context TareaService tareaService) {
         return tareaService.getTarea(tareaId);
     }
 
     @Named("findByIdImagen")
-    default Imagen findByIdImagen(Long imagenId) {
+    default Imagen findByIdImagen(Long imagenId, @Context ImagenService imagenService) {
         return imagenService.getImagen(imagenId);
     }
 

@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import um.es.usevalia.exception.UsuarioDuplicatedException;
 import um.es.usevalia.exception.UsuarioNotFoundException;
 
+import java.io.FileNotFoundException;
+
 @ControllerAdvice
 public class ExceptionController {
 
@@ -22,5 +24,12 @@ public class ExceptionController {
         return ResponseEntity
                 .status(409)
                 .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<String> handleFileNotFoundException(FileNotFoundException exception) {
+        return ResponseEntity
+                .status(404)
+                .body("Ha ocurrido un error inesperado al crear el documento PDF.");
     }
 }

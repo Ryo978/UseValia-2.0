@@ -3,6 +3,7 @@ package um.es.usevalia.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import um.es.usevalia.mapper.TareaMapper;
+import um.es.usevalia.mapper.TareaMapperImpl;
 import um.es.usevalia.model.Tarea;
 import um.es.usevalia.model.dto.TareaDTO;
 import um.es.usevalia.model.enums.Categoria;
@@ -13,7 +14,7 @@ import java.util.List;
 @Service
 public class TareaService {
 
-    //TODO: confirmar si necesito un controller, o con el controller de Puntuacion es suficiente.
+    private TareaMapper mapper = new TareaMapperImpl();
 
     @Autowired
     private TareaRepository repository;
@@ -35,8 +36,10 @@ public class TareaService {
     }
 
     public List<TareaDTO> listByCategoria(String categoria) {
-        List<Tarea> tareas = repository.findByCategoriaId(categoria);
-        return tareas.stream().map(TareaMapper.INSTANCE::tareaToTareaDTO).toList();
+        Categoria cat = Categoria.fromString(categoria);
+
+        List<Tarea> tareas = repository.findByCategoriaId(cat);
+        return tareas.stream().map(mapper::tareaToTareaDTO).toList();
     }
 
     public long getTotalByCategoria(Categoria categoria) {

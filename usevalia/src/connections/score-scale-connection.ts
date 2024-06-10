@@ -1,3 +1,4 @@
+import axios from "axios";
 import { ScoreSchema } from "../components/Entities/ScoreSchema";
 import { ScoreValue } from "../components/Entities/ScoreValue";
 import { getAuth } from "../utils/auth";
@@ -5,123 +6,121 @@ import { schemaScoreURL, valueScoreURL } from "../utils/constants";
 
 //Schema Part
 export const schemaList = async (): Promise<ScoreSchema[]> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(schemaScoreURL+'/list', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(schemaScoreURL+'/list',
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar las listas de esquema.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading schemas failed');
     }
-    return response.json();
 };
 
 export const schemaDelete = async (id: number): Promise<void> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(schemaScoreURL+'/delete/', {
-        method: 'DELETE',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.delete(schemaScoreURL+'/delete?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al eliminar el esquema con id: '+ id +'.');
+            'xauthtoken': token,
+        }});
+    } catch (error:any) {
+        throw new Error('Failed to delete schema');
     }
+    
 }
 
 export const schemaAdd = async (schema: ScoreSchema): Promise<number> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(schemaScoreURL+'/add', {
-        method: 'POST',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.post(schemaScoreURL+'/add',
+        schema,
+            {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(schema),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al añadir el esquema.');
+            'xauthtoken': token,
+        }});
+        return response.data;
     }
-
-    return response.json();
+    catch (error:any) {
+        throw new Error('Failed to add schema');
+    }
 }
 
 export const getNombreSchema = async (id: number): Promise<string> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(schemaScoreURL+'/getNombre', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(schemaScoreURL+'/getNombre?esquemaid='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar el nombre del esquema con id: '+ id +'.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get schema name');
     }
-
-    return response.json();
 }
 
 
 //Value part
 export const valueScoreList = async (id: number): Promise<ScoreValue[]> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(valueScoreURL+'/listbyescala', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(valueScoreURL+'/listbyescala?idEscala='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar los valores para el esquema con id: '+ id +'.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading values failed');
     }
-
-    return response.json();
 }
 
 export const deleteScoreValues = async (id: number): Promise<void> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(valueScoreURL+'/deletebyescala/', {
-        method: 'DELETE',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.delete(valueScoreURL+'/deletebyescala?idEscala='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al eliminar los valores para el esquema con id: '+ id +'.');
+            'xauthtoken': token,
+        }});
+    } catch (error:any) {
+        throw new Error('Failed to delete values');
     }
 }
 
 export const addScoreValue = async (values: ScoreValue[]): Promise<void> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(valueScoreURL+'/multipleAdd', {
-        method: 'POST',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.post(valueScoreURL+'/multipleAdd',
+        values,
+            {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(values),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al añadir el valor.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to add values');
     }
 }
+
+export const listByDirectriz = async (id: number): Promise<ScoreValue[]> => {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(valueScoreURL+'/getByDirectriz?idDirectriz='+id,
+        {headers: {
+            'Content-Type': 'application/json',
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get values');
+    }
+}
+
+
 
 

@@ -9,7 +9,6 @@ import um.es.usevalia.model.dto.UsuarioDTO;
 @Mapper
 public interface UsuarioMapper {
 
-    UsuarioMapper INSTANCE = Mappers.getMapper(UsuarioMapper.class);
 
     @Mapping(target = "id", ignore = false)
     UsuarioDTO usuarioToUsuarioDTO(Usuario usuario);

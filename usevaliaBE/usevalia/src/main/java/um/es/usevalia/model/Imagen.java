@@ -18,6 +18,10 @@ public class Imagen {
     private Long id;
 
     @Lob
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] datosImagen;
 
+    public void setDatosImagen(byte[] datosImagen) {
+        this.datosImagen = datosImagen;
+    }
 }

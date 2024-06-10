@@ -35,7 +35,7 @@ public class Auditoria {
     @Column(name = "FECHA_FIN_ESTIMADA", length = 250, nullable = false)
     private Date fechaFinEstimada;
 
-    @Column(name = "FECHA_FIN_REAL", length = 250, nullable = false)
+    @Column(name = "FECHA_FIN_REAL", length = 250, nullable = true)
     private Date fechaFinReal;
 
     @JoinColumn(name = "APLICACION", nullable = false)
@@ -56,7 +56,7 @@ public class Auditoria {
     @JsonIgnore
     @ManyToMany
     @JoinTable(
-            name = "USUARIOS",
+            name = "USUARIOSAUDITORIA",
             joinColumns = @JoinColumn(name = "AUDITORIA_ID"),
             inverseJoinColumns = @JoinColumn(name = "USUARIO_ID")
     )

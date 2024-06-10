@@ -1,158 +1,148 @@
+import axios from "axios";
 import { User } from "../components/Entities/User";
 import { getAuth, saveAuth } from "../utils/auth";
 import { loginURL, registerURL, userURL } from "../utils/constants";
+import { message } from "antd";
+
+const api = axios.create();
+
 
 export const login = async (email: string, password: string): Promise<User> => {
-    const response = await fetch(loginURL, {
-        method: 'GET',
-        headers: {
+    try{
+        let response = await api.post(loginURL+'?email='+email+'&password='+password, {headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Basic ' + btoa(email + ":" + password),
-        },
-        body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al iniciar sesión');
-    }
-    if (response.ok) { 
-        const authKey = response.headers.get("xAuthToken");
+        }});
+        let authKey = response.headers["xauthtoken"];
         if (authKey) {
             saveAuth(authKey);
         }
+
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Login failed');
     }
-
-
-    return response.json();
 };
 
-export const register = async (email: string, password: string, name: string): Promise<User> => {
-    const response = await fetch(registerURL, {
-        method: 'POST',
-        headers: {
+api.interceptors.response.use(function(response) {
+    if (response.headers['xauthtoken']) { // if server version newer
+        saveAuth(response.headers['xauthtoken']); //TODO: conseguir el token específico. save new token
+    };
+    return response; // continue with response
+  });
+
+export const register = async (email: string, password: string, nombre: string): Promise<User> => {
+    try{
+        let response = await api.post(registerURL+'?email='+email+'&password='+password+'&nombre='+nombre,{headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Basic ' + btoa(email + ":" + password),
-        },
-        body: JSON.stringify({ email, password, name }),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al registrar');
-    }
-
-    if (response.ok) { 
-        const authKey = response.headers.get("xAuthToken");
+        }});
+        let authKey = response.headers["xauthtoken"];
         if (authKey) {
             saveAuth(authKey);
         }
-    }
 
-    return response.json();
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Register failed');
+    }
+   
 }
 
 export const getUsuarios = async (): Promise<User[]> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(userURL+'/list', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(userURL+'/list',
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar la lista de Usuarios.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading users failed');
     }
 
-    return response.json();
 };
 
 export const getLastTimeChanged = async (id: number): Promise<Date> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(userURL+'/getCreated', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(userURL+'/getCreated?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar la última fecha de cambio.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Loading users failed');
     }
-
-    return response.json();
 }
 
 export const updateUser = async (id:number, nombre: string, password:string): Promise<User> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(userURL+'/update', {
-        method: 'PUT',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.put(userURL+'/update?id='+id+'&password='+password+'&nombre='+nombre,{headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify({id,nombre,password}),
-    });
+            'xauthtoken': token,
+        }});
 
-    if (!response.ok) {
-        throw new Error(response.statusText);
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to update user');
     }
-
-    return response.json();
 }
 
 export const updateRol = async (id:number, rol:string): Promise<User> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(userURL+'/updateRol', {
-        method: 'PUT',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.put(userURL+'/updateRol?id='+id+'&rol='+rol,{headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify({id,rol}),
-    });
+            'xauthtoken': token,
+        }});
 
-    if (!response.ok) {
-        throw new Error(response.statusText);
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to update user');
     }
 
-    return response.json();
 }
 
 export const getNombreUser = async (id: number): Promise<string> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(userURL+'/getNombre', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(userURL+'/getNombre?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar el nombre del usuario.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get user name');
     }
-
-    return response.json();
 }
 
 export const getUsuario = async (id: number): Promise<User> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(userURL+'/get', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(userURL+'/get?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar el usuario.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get user');
     }
+}
 
-    return response.json();
+export const resetPassword = async (email: string): Promise<void> => {
+    try{
+        let response = await axios.get(userURL+'/resetPassword?email='+email,
+        {headers: {
+            'Content-Type': 'application/json',
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to reset password');
+    }
 }

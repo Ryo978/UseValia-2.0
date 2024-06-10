@@ -22,12 +22,19 @@ public class UsuarioController {
     UsuarioService usuarioService;
 
     @SneakyThrows
-    @GetMapping
+    @PostMapping
     @RequestMapping("/login")
     public ResponseEntity<UsuarioDTO> login(@RequestParam String email, @RequestParam String password) {
         UsuarioDTO usuario = usuarioService.login(email, password);
         HttpHeaders headers = getToken(email);
         return new ResponseEntity<>(usuario, headers, HttpStatus.OK);
+    }
+
+    @SneakyThrows
+    @GetMapping
+    @RequestMapping("/resetPassword")
+    public void resetPassword(@RequestParam String email) {
+        usuarioService.resetPassword(email);
     }
 
     @SneakyThrows

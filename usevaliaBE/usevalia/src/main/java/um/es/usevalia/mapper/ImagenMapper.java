@@ -8,7 +8,6 @@ import um.es.usevalia.model.dto.ImagenDTO;
 @Mapper
 public interface ImagenMapper {
 
-    ImagenMapper INSTANCE = Mappers.getMapper(ImagenMapper.class);
 
     ImagenDTO imagenToImagenDTO(Imagen imagen);
 

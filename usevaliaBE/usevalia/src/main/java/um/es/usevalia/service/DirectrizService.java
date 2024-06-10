@@ -3,6 +3,7 @@ package um.es.usevalia.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import um.es.usevalia.mapper.DirectrizMapper;
+import um.es.usevalia.mapper.DirectrizMapperImpl;
 import um.es.usevalia.model.Directriz;
 import um.es.usevalia.model.EsquemaPuntuacion;
 import um.es.usevalia.model.GrupoDirectrices;
@@ -21,14 +22,19 @@ public class DirectrizService {
     @Autowired
     private EsquemaPuntuacionService esquemaPuntuacionService;
 
+    private DirectrizMapper mapper = new DirectrizMapperImpl();
+
 
     public List<DirectrizDTO> listByGrupo(Long grupoid) {
         return repository.listByGrupo(grupoid).stream()
-                .map(DirectrizMapper.INSTANCE::directrizToDirectrizDTO).toList();
+                .map(mapper::directrizToDirectrizDTO).toList();
+    }
+    public List<Directriz> getAllByGrupo(Long grupoid) {
+        return repository.listByGrupo(grupoid);
     }
 
     public void addDirectriz(DirectrizDTO directrizDTO) {
-        repository.save(convertDTOtoEntity(directrizDTO));
+        repository.save(mapper.directrizDTOToDirectriz(directrizDTO, grupoDirectricesService, esquemaPuntuacionService));
     }
     public void deleteDirectriz(DirectrizDTO directrizDTO) {
         repository.delete(convertDTOtoEntity(directrizDTO));
@@ -38,7 +44,7 @@ public class DirectrizService {
         return repository.findById(directrizId).orElse(null);
     }
     public DirectrizDTO getDirectrizDTO(Long directrizId) {
-        return DirectrizMapper.INSTANCE.directrizToDirectrizDTO(getDirectriz(directrizId));
+        return mapper.directrizToDirectrizDTO(getDirectriz(directrizId));
     }
 
     public Long getTotalBasicByCatalog(Long catalogId) {

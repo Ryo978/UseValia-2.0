@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Catalog } from "../Entities/Catalog";
 import AlertComponent from "../Alert-Component";
 import { Directriz, GrupoDirectrices } from "../Entities/Directrices";
-import { Modal, Table } from "antd";
+import { Modal, Table, message } from "antd";
 import { Catalog_for_list } from "./catalogs";
 import { getDirectricesByGrupoDirectrices, getGrupoDirectricesByCatalogo } from "../../connections/catalogs-connection";
 
@@ -13,27 +13,25 @@ interface DirectricesProps {
 
 const CatalogInfo: React.FC< {catalog: Catalog_for_list} > = ({catalog}) => {
     const [grupoDirectrices, setGrupoDirectrices] = useState<DirectricesProps[]>([]);
-    
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let gd: GrupoDirectrices[] = [];
-                let directrices: Directriz[] = [];
-                let result : DirectricesProps[] = [];
-                gd = await getGrupoDirectricesByCatalogo(catalog.id);
-                gd.forEach(async (gDirectriz) => {
-                    directrices = await getDirectricesByGrupoDirectrices(gDirectriz.id as number);
+                const gd = await getGrupoDirectricesByCatalogo(catalog.id);
+                const result = await Promise.all(gd.map(async (gDirectriz) => {
+                    const directrices = await getDirectricesByGrupoDirectrices(gDirectriz.id as number);
+                    // Convertir peso a string
                     directrices.forEach((directriz) => {
                         directriz.peso = directriz.peso.toString();
                     });
-                    result.push({
+                    return {
                         grupoDirectrices: gDirectriz,
                         directrices: directrices,
-                    });
-                });
+                    };
+                }));
                 setGrupoDirectrices(result);
             } catch (error: any) {
-                AlertComponent(error.message);
+                message.error('Loading guidelines failed');
             }
         }
         fetchData();
@@ -65,17 +63,17 @@ const CatalogInfo: React.FC< {catalog: Catalog_for_list} > = ({catalog}) => {
     const renderDirectricesTables = () => {
         if (catalog && grupoDirectrices) {
             return grupoDirectrices.map((grupoDirectrices) => (
-                <h2 key={grupoDirectrices.grupoDirectrices.id}>
+                <div key={grupoDirectrices.grupoDirectrices.id} >
                     <h3>{grupoDirectrices.grupoDirectrices.nombre}</h3>
-                    <Table columns={columns} dataSource={grupoDirectrices.directrices} />
-                </h2>
+                    <Table columns={columns} dataSource={grupoDirectrices.directrices} rowKey='id' pagination={false}/>
+                </div>
             ));
         }
         return null;
     };
 
     return (
-        <Modal title= "Catalog info" footer={null}>
+        <div>
             <h1>Catalog: {catalog.name}</h1>
             <p>- Score scale: {catalog.scoreScale}</p>
             <p>- Creator: {catalog.creator}</p>
@@ -84,7 +82,7 @@ const CatalogInfo: React.FC< {catalog: Catalog_for_list} > = ({catalog}) => {
             <p>- Write Permission: {catalog.write}</p>
             <h2>Guidelines</h2>
             {renderDirectricesTables()}
-        </Modal>
+        </div>
     );
 };
 

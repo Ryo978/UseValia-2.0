@@ -19,13 +19,14 @@ public class AplicacionController {
     @PostMapping
     @RequestMapping("/add")
     public void addAplicacion(@RequestBody AplicacionDTO aplicacion) {
+
         service.addAplicacion(aplicacion);
     }
 
     @DeleteMapping
     @RequestMapping("/delete")
-    public void deleteAplicacion(@RequestBody AplicacionDTO aplicacion) {
-        service.deleteAplicacion(aplicacion);
+    public void deleteAplicacion(@RequestParam Long id) {
+        service.deleteAplicacion(id);
     }
 
     @GetMapping

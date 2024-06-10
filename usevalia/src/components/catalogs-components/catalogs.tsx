@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Space, Modal } from 'antd';
+import { Table, Button, Space, Modal, message } from 'antd';
 import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { User } from '../Entities/User';
 import { connect } from 'react-redux';
 import { Catalog } from '../Entities/Catalog';
-import { getCatalogs } from '../../connections/catalogs-connection';
+import { deleteCatalog, getCatalogsByLectura } from '../../connections/catalogs-connection';
 import { getNombreUser } from '../../connections/user-connection';
 import { getNombreSchema } from '../../connections/score-scale-connection';
+import GroupConnection from '../../connections/auditors-group-connection';
 import CatalogInfo from './catalog-info-modal';
 
 export interface Catalog_for_list {
@@ -20,22 +21,19 @@ export interface Catalog_for_list {
 }
 
 const CatalogsPage: React.FC<{ user: User }> = ({ user}) => {
-    const [catalogList, setCatalogs] = useState<Catalog_for_list[]>([]);
+    const [catalogList, setCatalogsList] = useState<Catalog_for_list[]>([]);
+    const [searched, setSearched] = useState<boolean>(false);
+    const [catalogs, setCatalogs] = useState<Catalog[]>([]);
 
     useEffect( () => {
-        if (catalogList.length === 0) {
-            let catalogs: Catalog[];
-            let catalogArray: Catalog_for_list[] = [];
-            getCatalogs().then((data: Catalog[]) => {
-                catalogs = data;
-                let autor : string;
-                let grupo :string;
-                let score : string;
-                catalogs.forEach(async (element: Catalog) => {
-                    autor = await getNombreUser(element.autorid);
-                    score = await getNombreSchema(element.esquemaid);
-                    grupo = await getNombreUser(element.grupoid);
-                    catalogArray.push({
+        const fetchData = async () => {
+            try{
+                const catalogs: Catalog[] = await getCatalogsByLectura(user.id as number);
+                const catalogArray: Catalog_for_list[] = await Promise.all(catalogs.map(async (element: Catalog) => {
+                    const autor = await getNombreUser(element.autorid);
+                    const score = await getNombreSchema(element.esquemaid);
+                    const grupo = await GroupConnection.getNombreGroup(element.grupoid);
+                    return {
                         id: element.id as number,
                         name: element.nombre,
                         scoreScale: score,
@@ -43,26 +41,46 @@ const CatalogsPage: React.FC<{ user: User }> = ({ user}) => {
                         auditorsGroup: grupo,
                         read: element.lectura,
                         write: element.escritura,
-                    });
-                });
-            });
-                setCatalogs(catalogArray);
+                    };
+                }));
+                setCatalogsList(catalogArray);
+                setCatalogs(catalogs);
+                setSearched(true);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        if (!searched) {
+            fetchData();
         }
-    }, [catalogList]);
+    }, [user, searched]);
 
     const handleDelete = (id: number) => {
         Modal.confirm({
-            title: 'Eliminar Catálogo',
-            content: '¿Estás seguro de que quieres eliminar este catálogo? ' +
-                'Eliminarlo puede afectar a otras funcionalidades de la aplicación.',
+            title: 'Delete Catalog',
+            content: 'Are you sure you want to delete this catalog? ' +
+                'Deleting it can affect other functionalities of the application.',
             onOk() {
-                setCatalogs(prevCatalogs => prevCatalogs.filter((catalog) => catalog.id !== id));
+                try{
+                deleteCatalog(id);
+                setSearched(false);
+                setCatalogsList(prevCatalogs => prevCatalogs.filter((catalog) => catalog.id !== id));
+                } catch (error:any) {
+                    message.error('Deleting catalog failed, please contact with your administrator');
+                }
+
             }
         });
     };
 
     const handleView = (catalog: Catalog_for_list) => {
-        return <CatalogInfo catalog={catalog} />;
+        return Modal.info({
+            title: 'Catalog Info', 
+            content: <CatalogInfo catalog={catalog} />,
+            footer: null,
+            closable: true,
+            icon: null,
+        });
     };
 
     const columns = [
@@ -91,7 +109,7 @@ const CatalogsPage: React.FC<{ user: User }> = ({ user}) => {
             key: 'actions',
             render: (_:any, record:Catalog_for_list,) => (
                 <Space>
-                    {user.id === record.id ? (
+                    {user.id === catalogs.find(catalog => catalog.id === record.id)?.autorid ? (
                     <Button type="link" icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} />
                     ) : null}
                     <Button type="link" icon={<EyeOutlined />} onClick={() => handleView(record)}></Button>
@@ -103,7 +121,7 @@ const CatalogsPage: React.FC<{ user: User }> = ({ user}) => {
     return (
         <div>
             <h1>Catalogs</h1>
-            <Table dataSource={catalogList} columns={columns} />
+            <Table dataSource={catalogList} columns={columns} rowKey='id' pagination={false}/>
         </div>
     );
 };
@@ -113,4 +131,4 @@ const mapStateToProps = (state: any) => {
     };
 };
 
-export default connect(mapStateToProps,)(CatalogsPage);
+export default connect(mapStateToProps)(CatalogsPage);

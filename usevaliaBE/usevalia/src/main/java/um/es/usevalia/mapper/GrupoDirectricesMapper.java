@@ -1,5 +1,6 @@
 package um.es.usevalia.mapper;
 
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -13,17 +14,16 @@ import um.es.usevalia.service.EsquemaPuntuacionService;
 
 @Mapper
 public interface GrupoDirectricesMapper {
-    GrupoDirectricesMapper INSTANCE = Mappers.getMapper(GrupoDirectricesMapper.class);
 
-    CatalogoService catalogoService = new CatalogoService();
 
-    @Mapping(source = "catalogoId", target = "catalogo", qualifiedByName = "findByIdCatalogo")
-    GrupoDirectrices grupoDirectricesDTOToGrupoDirectrices(GrupoDirectricesDTO grupoDirectrices);
-    @Mapping(source = "catalogo.id", target = "catalogoId")
+    @Mapping(source = "catalogoid", target = "catalogo", qualifiedByName = "findByIdCatalogo")
+    GrupoDirectrices grupoDirectricesDTOToGrupoDirectrices(GrupoDirectricesDTO grupoDirectrices,
+                                                           @Context CatalogoService catalogoService);
+    @Mapping(source = "catalogo.id", target = "catalogoid")
     GrupoDirectricesDTO grupoDirectricesToGrupoDirectricesDTO(GrupoDirectrices grupoDirectrices);
 
     @Named("findByIdCatalogo")
-    default Catalogo findByIdCatalogo(Long catalogoId) {
+    default Catalogo findByIdCatalogo(Long catalogoId, @Context CatalogoService catalogoService) {
         return catalogoService.getCatalogo(catalogoId);
     }
 

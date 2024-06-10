@@ -1,6 +1,6 @@
 export enum Categoria {
     'Buscadores/Portales',
-    'BLogs/informativas',
+    'Blogs/Informativas',
     'Foros/Interaccción',
     'Redes Sociales',
     'Transacionales',

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import um.es.usevalia.mapper.TareaMapper;
+import um.es.usevalia.mapper.TareaMapperImpl;
 import um.es.usevalia.model.dto.TareaDTO;
 import um.es.usevalia.service.TareaService;
 
@@ -16,6 +17,8 @@ public class TareaController {
     @Autowired
     private TareaService tareaService;
 
+    TareaMapper mapper = new TareaMapperImpl();
+
     @DeleteMapping
     @RequestMapping("/delete")
     public void deleteTarea(@RequestParam Long id) {
@@ -25,13 +28,13 @@ public class TareaController {
     @GetMapping
     @RequestMapping("/get")
     public ResponseEntity<TareaDTO> getTarea(@RequestParam Long id) {
-       return ResponseEntity.ok(TareaMapper.INSTANCE.tareaToTareaDTO(tareaService.getTarea(id)));
+       return ResponseEntity.ok(mapper.tareaToTareaDTO(tareaService.getTarea(id)));
     }
 
     @PostMapping
     @RequestMapping("/add")
     public void addTarea(@RequestBody TareaDTO tareaDTO) {
-        tareaService.addTarea(TareaMapper.INSTANCE.tareaDTOToTarea(tareaDTO));
+        tareaService.addTarea(mapper.tareaDTOToTarea(tareaDTO));
     }
 
     @GetMapping

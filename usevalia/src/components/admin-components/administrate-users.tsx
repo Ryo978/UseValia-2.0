@@ -3,7 +3,7 @@ import { setUser } from "../../redux/actions";
 import { DeleteOutlined, EditOutlined, FilterOutlined } from '@ant-design/icons';
 import { useEffect, useState } from "react";
 import { User } from "../Entities/User";
-import { Button, Input, Space, Table } from "antd";
+import { Button, Input, Modal, Space, Table, message } from "antd";
 import AlertComponent from "../Alert-Component";
 import { getUsuarios } from "../../connections/user-connection";
 import EditUserFromAdmin from "./admin-edit-user";
@@ -18,20 +18,28 @@ const AdminPage: React.FC<{ user: any, setUser: any }> = ({ user, setUser}) => {
         if(users.length === 0) {
             try {
                 getUsuarios().then((data: User[]) => {
+                    data = data.filter((datauser: User) => datauser.id !== user.id);
                     setUsers(data);
                     setFilteredUsers(data);
                 });
             } catch (error: any) {
-                AlertComponent(error.message);
+                message.error('Loading users failed');
             }
         }
-    }, [users]);
+    }, []);
 
     const handleEdit = (record: User) => {
-        return <EditUserFromAdmin user={record} />
+        return Modal.info({
+            title: 'Edit User',
+            content: <EditUserFromAdmin user={record} />,
+            footer: null,
+            closable: true,
+            icon: null
+        });
+       // <EditUserFromAdmin user={record} />
     };
 
-    // Función para filtrar aplicaciones por nombre
+    // Función para filtrar usuarios por nombre
     const handleSearch = () => {
         const filteredValue = users.filter(userSingular => userSingular.nombre.toLowerCase().includes(searchText.toLowerCase()));
         setFilteredUsers(filteredValue);
@@ -95,7 +103,7 @@ const AdminPage: React.FC<{ user: any, setUser: any }> = ({ user, setUser}) => {
     return (
         <div>
             <h1>Admin Page</h1>
-            <Table columns={columns} dataSource={filteredUsers} />
+            <Table columns={columns} dataSource={filteredUsers} pagination={false}/>
         </div>
     );
 

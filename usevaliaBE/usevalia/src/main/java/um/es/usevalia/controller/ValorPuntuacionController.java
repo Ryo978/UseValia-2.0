@@ -45,4 +45,11 @@ public class ValorPuntuacionController {
         List<ValorPuntuacionDTO> list = valorPuntuacionService.listValorPuntuacionByEscala(idEscala);
         return ResponseEntity.ok(list);
     }
+
+    @GetMapping
+    @RequestMapping("/getByDirectriz")
+    public ResponseEntity<List<ValorPuntuacionDTO>> getByDirectriz(@RequestParam Long idDirectriz){
+        List<ValorPuntuacionDTO> list = valorPuntuacionService.getByDirectriz(idDirectriz);
+        return ResponseEntity.ok(list);
+    }
 }

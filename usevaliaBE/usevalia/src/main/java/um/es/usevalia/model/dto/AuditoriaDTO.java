@@ -33,7 +33,7 @@ public class AuditoriaDTO {
 
     private Long catalogoId;
 
-    private Evaluacion evaluacion;
+    private String evaluacion;
 
     private List<UsuarioDTO> usuarios;
 }

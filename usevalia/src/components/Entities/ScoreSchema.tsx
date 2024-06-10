@@ -1,5 +1,5 @@
 export interface ScoreSchema {
-    id: number | undefined;
+    id: number;
     nombre: string;
     descripcion: string;
 }

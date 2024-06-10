@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Space, Modal, Input } from 'antd';
+import { Table, Button, Space, Modal, Input, message } from 'antd';
 import { DeleteOutlined, FilterOutlined } from '@ant-design/icons';
 import { User } from '../Entities/User';
 import { Tag } from '../Entities/Tag';
@@ -16,35 +16,46 @@ const AuditorsPage: React.FC<{ user: any }> = ({ user }) => {
     const [filteredAuditors, setFilteredAuditors] = useState<GroupAuditor[]>([]);
     const [searchTextName, setSearchTextName] = useState<string>('');
     const [searchTextUser, setSearchTextUser] = useState<string>('');
+    const [searched, setSearched] = useState<boolean>(false);
 
     useEffect(() => {
-        if (auditors.length === 0) {
+        if (auditors.length === 0 && !searched )  {
             try {
                 GroupConnection.groupList(user.id).then((data: GroupAuditor[]) => {
                     setAuditors(data);
                     setFilteredAuditors(data);
+                    setSearched(true);
                 });
             } catch (error:any) {
-                AlertComponent(error.message);;
+                message.error('Loading auditors failed');
             }
         }
 
-    }, [auditors, user]);
+    }, [auditors, user, searched]);
 
     const handleAdd = () => {
-        return <Modal title="Add Auditor"  footer={null}>
-                <AddAuditor />
-            </Modal>
+        return Modal.info({
+            title: 'Add Auditor',
+            content: <AddAuditor user={user} />,
+            footer: null,
+            closable: true,
+            icon: null
+        });
     }
 
     const handleDelete = (id: number) => {
         Modal.confirm({
-            title: 'Eliminar Grupo de Auditores',
-            content: '¿Estás seguro de que quieres eliminar este grupo?',
-            onOk() {
-            GroupConnection.groupDelete(id).then(() => {
-                setAuditors(prevAuditors => prevAuditors.filter(auditor => auditor.id !== id));
-            });
+            title: 'Delete Auditors Group',
+            content: 'Are you sure you want to delete this group?',
+            async onOk() {
+                try{
+                    await GroupConnection.groupDelete(id).then(() => {
+                        setAuditors(prevAuditors => prevAuditors.filter(auditor => auditor.id !== id));
+                        setSearched(false);
+                    });
+                } catch (error:any) {
+                    message.error('Deleting auditor failed');
+                }
             },
         });
         
@@ -85,7 +96,7 @@ const AuditorsPage: React.FC<{ user: any }> = ({ user }) => {
     const columns = [
         {
             title: 'Group Name',
-            dataIndex: 'groupName',
+            dataIndex: 'nombre',
             key: 'groupName',
             filterDropdown: () => (
                 <div style={{ padding: 8 }}>
@@ -107,7 +118,7 @@ const AuditorsPage: React.FC<{ user: any }> = ({ user }) => {
         },
         {
             title: 'Group Members',
-            dataIndex: 'groupMembers',
+            dataIndex: 'usuarios',
             key: 'groupMembers',
             render: (groupMembers: User[]) => (
                 <ul>
@@ -136,12 +147,12 @@ const AuditorsPage: React.FC<{ user: any }> = ({ user }) => {
         },
         {
             title: 'Description',
-            dataIndex: 'description',
+            dataIndex: 'descripcion',
             key: 'description',
         },
         {
             title: 'Tags',
-            dataIndex: 'tags',
+            dataIndex: 'etiquetas',
             key: 'tags',
             render: (tags: Tag[]) => (
                 <ul>
@@ -165,8 +176,8 @@ const AuditorsPage: React.FC<{ user: any }> = ({ user }) => {
     return (
         <div>
             <h1>Auditors Group</h1>
-            <Button type="primary" onClick={() => handleAdd()}>Add App</Button>
-            <Table dataSource={filteredAuditors} columns={columns} />
+            <Button type="primary" onClick={() => handleAdd()}>Add Auditors group</Button>
+            <Table dataSource={filteredAuditors} columns={columns} pagination={false}/>
         </div>
     );
 };

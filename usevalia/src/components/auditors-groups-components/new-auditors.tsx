@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Form, Input, Button, Select, App, Alert } from 'antd';
+import { Form, Input, Button, Select, App, Alert, Modal, message } from 'antd';
 import { Categoria } from '../Entities/Categoria';
 import GroupConnection from '../../connections/auditors-group-connection';
 import AlertComponent from '../Alert-Component';
@@ -7,26 +7,34 @@ import { GroupAuditor } from '../Entities/Group-auditors';
 import { getUsuarios } from '../../connections/user-connection';
 import { User } from '../Entities/User';
 import { connect } from 'react-redux';
+import { Tag } from '../Entities/Tag';
 
 const AddAuditor: React.FC<{ user: any }> = ({ user }) => {
     
     const [users, setUsers] = React.useState<User[]>([]);
 
-    const onFinish = (values: any) => {
-        let etiquetas = values.etiquetas.split(',');
-        let usuarios = values.usuarios;
+    const onFinish = async(values: any) => {
+        let etiquetas = buildTags(values.etiquetas);
+        let usuarios = getUsuariosFromId(values.usuarios);
         usuarios.push(user);
         let groupAuditor : GroupAuditor = {
-            id: undefined,
+            id: 0,
             nombre: values.nombre,
             etiquetas: etiquetas,
             usuarios: usuarios,
             descripcion: values.descripcion,
         }
         try {
-            GroupConnection.groupAdd(groupAuditor);
+            await GroupConnection.groupAdd(groupAuditor);
+            Modal.success({
+                title: 'Group added',
+                content: 'The group has been added successfully',
+                onOk() {
+                    window.location.reload();
+                }
+            });
         } catch (error:any) {
-            return AlertComponent(error.message);
+           message.error('Adding group failed');
         }
     };
     useEffect(() => {
@@ -37,10 +45,30 @@ const AddAuditor: React.FC<{ user: any }> = ({ user }) => {
                 setUsers(data);
             });
         } catch (error:any) {
-            AlertComponent(error.message);
+            message.error('Loading users failed');
         }
         
     }, [user]);
+
+    const getUsuariosFromId = (idsUsuarios: number[]) => {
+        let usuarios: User[] = [];
+        idsUsuarios.forEach((id: number) => {
+            let user = users.find((us: User) => us.id === id);
+            if (user) {
+                usuarios.push(user);
+            }
+        });
+        return usuarios;
+    }
+
+    const buildTags = (tags: string) => {
+        let tagsArray = tags.split(',');
+        let tagsObj: Tag[] = [];
+        tagsArray.forEach((tag: string) => {
+            tagsObj.push({id: 0, valor: tag});
+        });
+        return tagsObj;
+    }
 
 
     return (
@@ -48,7 +76,7 @@ const AddAuditor: React.FC<{ user: any }> = ({ user }) => {
             <Form.Item
                 label="Group name"
                 name="nombre"
-                rules={[{ required: true, message: 'Por favor ingresa el nombre de la aplicación' }]}
+                rules={[{ required: true, message: 'Please insert the name of the application' }]}
             >
                 <Input />
             </Form.Item>
@@ -56,7 +84,7 @@ const AddAuditor: React.FC<{ user: any }> = ({ user }) => {
             <Form.Item
                 label="Description"
                 name="descripcion"
-                rules={[{ required: true, message: 'Por favor ingresa una descripción' }]}
+                rules={[{ required: true, message: 'Please add a description' }]}
             >
                 <Input.TextArea />
             </Form.Item>
@@ -70,14 +98,13 @@ const AddAuditor: React.FC<{ user: any }> = ({ user }) => {
             <Form.Item
                 label="Users"
                 name="usuarios"
-                rules={[{ required: true, message: 'Por favor selecciona al menos un usuario' }]}
+                rules={[{ required: true, message: 'Please select at least one user.' }]}
             >
                 <Select mode="multiple" showSearch filterOption={(input, option) =>
-                    (option?.children as any as User)?.nombre.toLowerCase()?.indexOf(input.toLowerCase()) >= 0
-                /*TODO: revisar si esto es correcto. */}>
+                    (option?.children as any as User)?.nombre.toLowerCase()?.indexOf(input.toLowerCase()) >= 0}>
                     {users.map((us: User) => (
-                        <Select.Option key={us.id} value={us}>
-                            {us.nombre}
+                        <Select.Option key={us.id} value={us.id}>
+                            {us.nombre + ' - ' + us.email}
                         </Select.Option>
                     ))}
                 </Select>
@@ -92,10 +119,4 @@ const AddAuditor: React.FC<{ user: any }> = ({ user }) => {
     );
 };
 
-const mapStateToProps = (state: any) => {
-    return {
-        user: state.user,
-    };
-};
-
-export default connect(mapStateToProps) (AddAuditor);
+export default  (AddAuditor);

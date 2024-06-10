@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import { User } from './Entities/User';
-import AlertComponent from './Alert-Component';
 import { register } from '../connections/user-connection';
 
 const RegistrationForm: React.FC<{ keepAlive: (value: boolean) => void, setUser: (value: User) => void }> = ({ keepAlive, setUser }) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
 
-    const onFinish = (values: any) => {
-        values.preventDefault();
+    const onFinish = async(values: any) => {
         console.log('Received values of form:', values);
         setLoading(true)
         try {
-            register(values.email, values.password, values.name).then((data: User) => setUser(data));
+            await register(values.email, values.password, values.name).then((data: User) => setUser(data));
             setLoading(false);
             keepAlive(false)
         } catch (error:any) {
             setLoading(false);
-            return AlertComponent(error.message);
+            message.error('Registration failed, the email is already in use');
         }
     };
 
@@ -31,11 +29,11 @@ const RegistrationForm: React.FC<{ keepAlive: (value: boolean) => void, setUser:
                 rules={[
                     {
                         type: 'email',
-                        message: 'Por favor ingresa un email válido',
+                        message: 'Put a valid email please',
                     },
                     {
                         required: true,
-                        message: 'Por favor ingresa tu email',
+                        message: 'Please input your email',
                     },
                 ]}
             >
@@ -48,7 +46,7 @@ const RegistrationForm: React.FC<{ keepAlive: (value: boolean) => void, setUser:
                 rules={[
                     {
                         required: true,
-                        message: 'Por favor ingresa tu nombre',
+                        message: 'Please input your name',
                     },
                 ]}
             >
@@ -61,7 +59,7 @@ const RegistrationForm: React.FC<{ keepAlive: (value: boolean) => void, setUser:
                 rules={[
                     {
                         required: true,
-                        message: 'Por favor ingresa tu contraseña',
+                        message: 'Please input your password',
                     },
                 ]}
             >
@@ -75,7 +73,7 @@ const RegistrationForm: React.FC<{ keepAlive: (value: boolean) => void, setUser:
                 rules={[
                     {
                         required: true,
-                        message: 'Por favor repite tu contraseña',
+                        message: 'Please confirm your password',
                     },
                     ({ getFieldValue }) => ({
                         validator(_, value) {
@@ -92,9 +90,9 @@ const RegistrationForm: React.FC<{ keepAlive: (value: boolean) => void, setUser:
 
             <Form.Item>
                 <Button type="primary" loading={loading} htmlType="submit">
-                    Registrarse
+                    Register
                 </Button>
-                <Button onClick={() => keepAlive(false)}>Cancelar</Button>
+                <Button onClick={() => keepAlive(false)}>Cancel</Button>
             </Form.Item>
         </Form>
     );

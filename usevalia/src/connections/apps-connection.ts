@@ -1,88 +1,78 @@
+import axios from "axios";
 import { Application } from "../components/Entities/Application";
 import { getAuth } from "../utils/auth";
 import { appURL } from "../utils/constants";
 
 
  const list = async (): Promise<Application[]> => {
+    try{
     const token: string = getAuth() ?? '';
-    const response = await fetch(appURL+'/list', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar las listas.');
+    let response = await axios.get(appURL+'/list',
+    {headers: {
+        'Content-Type': 'application/json',
+        'xauthtoken': token,
+    }});
+    return response.data;
     }
-    return response.json();
+    catch (error:any) {
+        throw new Error('Loading applications failed');
+    }
 };
 
  const isEditable = async (id: number): Promise<boolean> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(appURL+'/isEditable/', {
-        method: 'GET',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.get(appURL+'/isEditable?aplicacionId='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error, no se ha podido comprobar si es editable.');
+            'xauthtoken': token,
+        }});
+        return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to delete application');
     }
-    return response.json();
 }
 
  const add = async (application: Application): Promise<void> => {
+    try{
     const token: string = getAuth() ?? '';
-    const response = await fetch(appURL+'/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(application),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al añadir la aplicación.');
+    let response = await axios.post(appURL+'/add',
+    application,
+    {headers: {
+    'Content-Type': 'application/json',
+    'xauthtoken': token,
+    }});
+    return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to add application');
     }
 }
 
  const deleteApp = async (id: number): Promise<void> => {
-    const token: string = getAuth() ?? '';
-    const response = await fetch(appURL+'/delete/', {
-        method: 'DELETE',
-        headers: {
+    try{
+        const token: string = getAuth() ?? '';
+        let response = await axios.delete(appURL+'/delete?id='+id,
+        {headers: {
             'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al eliminar la aplicación.');
+            'xauthtoken': token,
+        }});
+    } catch (error:any) {
+        throw new Error('Failed to delete application');
     }
 }
 
 const get = async (id: number): Promise<Application> => {
+    try{
     const token: string = getAuth() ?? '';
-    const response = await fetch(appURL+'/get/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'xAuthToken': token,
-        },
-        body: JSON.stringify(id),
-    });
-
-    if (!response.ok) {
-        throw new Error('Error al recuperar la aplicación.');
+    let response = await axios.get(appURL+'/get?aplicacionId='+id,
+    {headers: {
+        'Content-Type': 'application/json',
+        'xauthtoken': token,
+    }});
+    return response.data;
+    } catch (error:any) {
+        throw new Error('Failed to get application');
     }
-    return response.json();
 }
 
 export default{

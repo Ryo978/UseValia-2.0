@@ -1,5 +1,6 @@
 package um.es.usevalia.mapper;
 
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -15,7 +16,6 @@ import um.es.usevalia.service.GrupoDirectricesService;
 @Mapper
 public interface DirectrizMapper {
 
-    DirectrizMapper INSTANCE = Mappers.getMapper(DirectrizMapper.class);
 
     GrupoDirectricesService grupoDirectricesService = new GrupoDirectricesService();
     EsquemaPuntuacionService esquemaPuntuacionService = new EsquemaPuntuacionService();
@@ -28,14 +28,16 @@ public interface DirectrizMapper {
 
     @Mapping(source = "grupoId", target = "grupo", qualifiedByName = "findByIdGrupo")
     @Mapping(source = "esquemaId", target = "esquema", qualifiedByName = "findByIdEsquema")
-    Directriz directrizDTOToDirectriz(DirectrizDTO directriz);
+    Directriz directrizDTOToDirectriz(DirectrizDTO directriz,
+                                      @Context GrupoDirectricesService grupoDirectricesService,
+                                      @Context EsquemaPuntuacionService esquemaPuntuacionService);
 
     @Named("findByIdGrupo")
-    default GrupoDirectrices findByIdGrupo(Long grupoId) {
+    default GrupoDirectrices findByIdGrupo(Long grupoId, @Context GrupoDirectricesService grupoDirectricesService) {
         return grupoDirectricesService.getGrupoDirectrices(grupoId);
     }
     @Named("findByIdEsquema")
-    default EsquemaPuntuacion findByIdEsquema(Long esquemaId) {
+    default EsquemaPuntuacion findByIdEsquema(Long esquemaId, @Context EsquemaPuntuacionService esquemaPuntuacionService) {
         return esquemaPuntuacionService.getEsquemaPuntuacion(esquemaId);
     }
 

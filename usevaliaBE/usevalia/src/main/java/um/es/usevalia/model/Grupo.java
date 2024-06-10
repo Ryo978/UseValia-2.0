@@ -29,17 +29,17 @@ public class Grupo {
     @JsonIgnore
     @ManyToMany
     @JoinTable(
-            name = "ETIQUETAS",
-            joinColumns = @JoinColumn(name = "ETIQUETA_ID"),
-            inverseJoinColumns = @JoinColumn(name = "AUDITORIA_ID")
+            name = "ETIQUETASGRUPO",
+            joinColumns = @JoinColumn(name = "GRUPO_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ETIQUETA_ID")
     )
     private List<Etiqueta> etiquetas; //TODO: hacer DTO, controlador y servicio.
 
     @JsonIgnore
     @ManyToMany
     @JoinTable(
-            name = "USUARIOS",
-            joinColumns = @JoinColumn(name = "ETIQUETA_ID"),
+            name = "USUARIOSGRUPO",
+            joinColumns = @JoinColumn(name = "GRUPO_ID"),
             inverseJoinColumns = @JoinColumn(name = "USUARIO_ID")
     )
     private List<Usuario> usuarios;

@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class AuthInfoFilter extends OncePerRequestFilter {
     @Value("${app.authfilter.mappedUrls}")
     String[] mappedUrls;
-    private final static String AUTH_TOKEN= "xAuthToken";
+    private final static String AUTH_TOKEN= "xauthtoken";
     private static AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     @Override

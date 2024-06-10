@@ -1,13 +1,16 @@
 package um.es.usevalia.service;
 
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import um.es.usevalia.exception.UsuarioDuplicatedException;
 import um.es.usevalia.exception.UsuarioNotFoundException;
 import um.es.usevalia.mapper.UsuarioMapper;
+import um.es.usevalia.mapper.UsuarioMapperImpl;
 import um.es.usevalia.model.Usuario;
 import um.es.usevalia.model.dto.UsuarioDTO;
 import um.es.usevalia.repository.UsuarioRepository;
+import um.es.usevalia.utils.PasswordCreation;
 
 import java.util.Date;
 import java.util.List;
@@ -18,7 +21,11 @@ public class UsuarioService {
     @Autowired
     UsuarioRepository repository;
 
-    UsuarioMapper mapper = UsuarioMapper.INSTANCE;
+    @Autowired
+    EmailService emailService;
+
+    UsuarioMapper mapper = new UsuarioMapperImpl();
+
 
     public List<UsuarioDTO> getUsuarios() {
         return repository.findAll().stream().map(mapper::usuarioToUsuarioDTO).toList();
@@ -26,8 +33,13 @@ public class UsuarioService {
 
     public UsuarioDTO login(String email, String password) throws UsuarioNotFoundException {
         Usuario usuario = repository.findByEmail(email);
-        if (usuario == null || !usuario.getPassword().equals(password)) {
+        if (usuario == null || (!usuario.getPassword().equals(password) && ((usuario.getTemporaryPassword() != null && !usuario.getTemporaryPassword().equals(password)) || !usuario.isTemporaryEnabled()))) {
             throw new UsuarioNotFoundException("The email or password are incorrect");
+        }
+
+        if (usuario.getTemporaryPassword() != null && usuario.getTemporaryPassword().equals(password) && usuario.isTemporaryEnabled()) {
+            usuario.setTemporaryEnabled(false);
+            repository.save(usuario);
         }
         return mapper.usuarioToUsuarioDTO(usuario);
     }
@@ -37,7 +49,7 @@ public class UsuarioService {
         if (repository.findByEmail(email) != null) {
             throw new UsuarioDuplicatedException("The email is already in use");
         }
-        usuario.setRol("User");
+        usuario.setRol("user");
         usuario.setChanged(new Date());
         repository.save(usuario);
         return mapper.usuarioToUsuarioDTO(usuario);
@@ -49,6 +61,11 @@ public class UsuarioService {
 
     public UsuarioDTO getUsuarioDTO(Long id) {
         return mapper.usuarioToUsuarioDTO(getUsuario(id));
+    }
+
+    @Named("getUsuariosFromDTO")
+    public List<Usuario> getUsuariosFromDTO(List<UsuarioDTO> usuariosDTO) {
+        return usuariosDTO.stream().map(usuarioDTO -> getUsuario(usuarioDTO.getId())).toList();
     }
 
     public UsuarioDTO updateUsuario(Long id, String nombre, String password) throws UsuarioNotFoundException {
@@ -72,5 +89,20 @@ public class UsuarioService {
         usuario.setChanged(new Date());
         repository.save(usuario);
         return mapper.usuarioToUsuarioDTO(usuario);
+    }
+
+    public void resetPassword(String email) throws Exception {
+        Usuario usuario = repository.findByEmail(email);
+        if (usuario == null) {
+            throw new UsuarioNotFoundException("The user does not exist");
+        }
+        usuario.setTemporaryEnabled(true);
+        String password = PasswordCreation.generatePassword();
+        usuario.setTemporaryPassword(password);
+        repository.save(usuario);
+        String asunto = "Usevalia's password reset";
+        String mensaje = "Hello, here is your temporary password : " + password;
+        emailService.enviarCorreo(email, asunto, mensaje);
+
     }
 }

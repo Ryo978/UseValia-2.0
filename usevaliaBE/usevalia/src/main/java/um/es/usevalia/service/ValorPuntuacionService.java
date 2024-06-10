@@ -3,6 +3,7 @@ package um.es.usevalia.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import um.es.usevalia.mapper.ValorPuntuacionMapper;
+import um.es.usevalia.mapper.ValorPuntuacionMapperImpl;
 import um.es.usevalia.model.EsquemaPuntuacion;
 import um.es.usevalia.model.ValorPuntuacion;
 import um.es.usevalia.model.dto.ValorPuntuacionDTO;
@@ -19,17 +20,23 @@ public class ValorPuntuacionService {
     @Autowired
     EsquemaPuntuacionService esquemaPuntuacionService;
 
+    ValorPuntuacionMapper mapper = new ValorPuntuacionMapperImpl();
+
     public void addValorPuntuacion(ValorPuntuacionDTO valorPuntuacionDTO) {
-        repository.save(ValorPuntuacionMapper.INSTANCE.valorPuntuacionDTOToValorPuntuacion(valorPuntuacionDTO));
+        repository.save(mapper.valorPuntuacionDTOToValorPuntuacion(valorPuntuacionDTO, esquemaPuntuacionService));
     }
 
     public void deleteValorPuntuacion(ValorPuntuacionDTO valorPuntuacionDTO) {
-        repository.delete(ValorPuntuacionMapper.INSTANCE.valorPuntuacionDTOToValorPuntuacion(valorPuntuacionDTO));
+        repository.delete(mapper.valorPuntuacionDTOToValorPuntuacion(valorPuntuacionDTO, esquemaPuntuacionService));
     }
 
     public List<ValorPuntuacionDTO> listValorPuntuacionByEscala(Long idEscala) {
         return repository.findByEscalaId(idEscala).stream()
-                .map(ValorPuntuacionMapper.INSTANCE::valorPuntuacionToValorPuntuacionDTO).toList();
+                .map(mapper::valorPuntuacionToValorPuntuacionDTO).toList();
+    }
+
+    public List<ValorPuntuacion> listValoresByEscala(Long idEscala) {
+        return repository.findByEscalaId(idEscala);
     }
 
     private ValorPuntuacion convertDTOToEntity(ValorPuntuacionDTO valorPuntuacionDTO) {
@@ -41,5 +48,10 @@ public class ValorPuntuacionService {
 
     public void deleteValorPuntuacionByEscala(Long idEscala) {
         repository.deleteByEscalaId(idEscala);
+    }
+
+    public List<ValorPuntuacionDTO> getByDirectriz(Long idDirectriz) {
+        return repository.findByDirectrizId(idDirectriz).stream()
+                .map(mapper::valorPuntuacionToValorPuntuacionDTO).toList();
     }
 }

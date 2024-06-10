@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Table, Button, Space, Modal } from 'antd';
+import { Table, Button, Space, Modal, Tooltip, message } from 'antd';
 import { DeleteOutlined, CloseOutlined, ReloadOutlined, FileAddOutlined, CheckOutlined, EyeOutlined, BarChartOutlined } from '@ant-design/icons';
 import { User } from '../Entities/User';
 import { connect } from 'react-redux';
@@ -9,21 +9,25 @@ import { closeAudit, deleteAudit, getAuditReport, getEvaluationStatus, listAudit
 import AppConnection from '../../connections/apps-connection';
 import { getCatalog } from '../../connections/catalogs-connection';
 import AuditInfoModal from './audit-information-modal';
+import { useNavigate } from 'react-router-dom';
+import ChartAudits from './report-and-stats/audit-stats';
 
-interface AuditInformation {
+export interface AuditInformationTable {
     id: number;
     auditName: string;
     app: string;
     evaluatedCatalog: string;
     auditors: User[];
     evaluationStatus: string;
+    administradorid: number;
     fechaFinReal: Date | null;
 }
 
 
 const AuditsPage: React.FC<{ user: User, audit: number, setAudit: any }> = ({ user, audit, setAudit }) => {
 
-    const [audits, setAudits] = React.useState<AuditInformation[]>([]);
+    const [audits, setAudits] = React.useState<AuditInformationTable[]>([]);
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -35,38 +39,45 @@ const AuditsPage: React.FC<{ user: User, audit: number, setAudit: any }> = ({ us
             return 'Pending';
         }
 
-        if (audits.length === 0) {
-            let audit: Audit[] = [];
-            if (user.rol === 'admin') {
-                listAudits().then((data: Audit[]) => {
-                    audit.push(...data);
-                });
-            } else {
-                listAuditByUser(user.id as number).then((data: Audit[]) => {
-                    audit.push(...data);
-                });
+        const fetchData = async () => {
+            try{
+                if (audits.length === 0) {
+                    let audit: Audit[] = [];
+                    if (user.rol === 'admin') {
+                        await listAudits().then((data: Audit[]) => {
+                            audit.push(...data);
+                        });
+                    } else {
+                        await listAuditByUser(user.id as number).then((data: Audit[]) => {
+                            audit.push(...data);
+                        });
+                    }
+                    let auditInformation: AuditInformationTable[] = [];
+                    for (const element of audit) {
+                        let app = await AppConnection.get(element.aplicacionId);
+                        let catalogo = await getCatalog(element.catalogoId);
+
+                        auditInformation.push({
+                            id: element.id as number,
+                            auditName: element.nombre,
+                            app: app.nombre,
+                            evaluatedCatalog: catalogo.nombre,
+                            auditors: element.usuarios,
+                            evaluationStatus: await getEvaluationStatusString(element.id as number),
+                            administradorid: element.administradorId as number,
+                            fechaFinReal: element.fechaFinReal as Date,
+                        });
+                    }
+                    setAudits(auditInformation);
+                }
             }
-            let auditInformation: AuditInformation[] = [];
-            audit.forEach(async (element: Audit) => {
-                let app = await AppConnection.get(element.aplicacionId);
-                //let administrador = await getUsuario(element.administradorId);
-                let catalogo = await getCatalog(element.catalogoId);
+            catch (error:any) {
+                message.error('Loading audits failed');
+            }
+        };
 
-                auditInformation.push({
-                    id: element.id as number,
-                    auditName: element.nombre,
-                    app: app.nombre,
-                    evaluatedCatalog: catalogo.nombre,
-                    auditors: element.usuarios,
-                    evaluationStatus: await getEvaluationStatusString(element.id as number),
-                    fechaFinReal: element.fechaFinReal,
-                });
-            })
-            setAudits(auditInformation);
-
-
-        }
-    }, [audits, user]);
+        fetchData();
+    }, [user, audits.length]);
 
     const columns = [
         {
@@ -98,36 +109,37 @@ const AuditsPage: React.FC<{ user: User, audit: number, setAudit: any }> = ({ us
         {
             title: 'Actions',
             key: 'actions',
-            render: (text: string, record: AuditInformation) => (
+            render: (text: string, record: AuditInformationTable) => (
                 <Space size="middle">
                     {user.rol === 'admin' && (
-                        <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)}>
-                            Delete
-                        </Button>
+                        <Tooltip title="Delete">
+                            <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} />
+                        </Tooltip>
                     )}
-                    { (user.rol !== 'admin' || record.auditors.map(usr => usr.id).includes(user.id)) && (
+                    { ((user.rol !== 'admin' || record.administradorid === user.id) 
+                            && record.evaluationStatus === 'Completed') && (
                         <>
-                            <Button icon={<CloseOutlined />} disabled={!!record.fechaFinReal} onClick={() => handleCloseAudit(record)}>
-                                Close Audit
-                            </Button>
-                            <Button icon={<ReloadOutlined />} disabled={!record.fechaFinReal} onClick={() => handleReopenAudit(record)}>
-                                Reopen
-                            </Button>
-                            <Button type="link" icon={<BarChartOutlined />} onClick={() => handleGoToCharts(record.id)}>
-                                Open Charts
-                            </Button>
-                            <Button type="link" icon={<FileAddOutlined />} onClick={() => handleCreateReport(record)}>
-                                Create Report
-                            </Button>
-                            <Button type="link" icon={<CheckOutlined />} disabled={!!record.fechaFinReal} onClick={() => handleEvaluate(record.id)}>
-                                Evaluate
-                            </Button>
+                            <Tooltip title="Close Audit">
+                                <Button icon={<CloseOutlined />} disabled={!!record.fechaFinReal} onClick={() => handleCloseAudit(record)} />
+                            </Tooltip>
+                            <Tooltip title="Reopen Audit">
+                                <Button icon={<ReloadOutlined />} disabled={!record.fechaFinReal} onClick={() => handleReopenAudit(record)} />
+                            </Tooltip>
+                            <Tooltip title="See charts">
+                                <Button icon={<BarChartOutlined />} onClick={() => handleGoToCharts(record)} />
+                            </Tooltip>
+                            <Tooltip title="Create Report">
+                                <Button icon={<FileAddOutlined />} onClick={() => handleCreateReport(record)} />
+                            </Tooltip>
 
                         </>
                     )}
-                    <Button icon={<EyeOutlined />} onClick={() => handleViewDetails(record.id)}>
-                        View Details
-                    </Button>
+                    <Tooltip title="Evaluate">
+                        <Button icon={<CheckOutlined />} disabled={!!record.fechaFinReal} onClick={() => handleEvaluate(record.id)} />
+                    </Tooltip>
+                    <Tooltip title="View Details">
+                    <Button icon={<EyeOutlined />} onClick={() => handleViewDetails(record.id)} />
+                    </Tooltip>
                 </Space>
             ),
         },
@@ -144,7 +156,7 @@ const AuditsPage: React.FC<{ user: User, audit: number, setAudit: any }> = ({ us
         });
     };
 
-    const handleCloseAudit = (audit: AuditInformation) => {
+    const handleCloseAudit = (audit: AuditInformationTable) => {
         Modal.confirm({
             title: 'Close Audit',
             content: 'Are you sure you want to close this audit?',
@@ -155,7 +167,7 @@ const AuditsPage: React.FC<{ user: User, audit: number, setAudit: any }> = ({ us
         });
     };
 
-    const handleReopenAudit = (audit: AuditInformation) => {
+    const handleReopenAudit = (audit: AuditInformationTable) => {
         Modal.confirm({
             title: 'Reopen Audit',
             content: 'Are you sure you want to reopen this audit?',
@@ -166,7 +178,7 @@ const AuditsPage: React.FC<{ user: User, audit: number, setAudit: any }> = ({ us
         });
     };
 
-    const handleCreateReport =  (audit: AuditInformation) => {
+    const handleCreateReport =  (audit: AuditInformationTable) => {
         Modal.confirm({
             title: 'Create Report',
             content: 'You are going to create and download a report for this audit. Are you sure?',
@@ -183,20 +195,36 @@ const AuditsPage: React.FC<{ user: User, audit: number, setAudit: any }> = ({ us
 
     const handleEvaluate = (id: number) => {
         // Evaluate logic here
+        setAudit(id);
+        navigate('/evaluate-audit');
     };
 
     const handleViewDetails = (id: number) => {
-        return <AuditInfoModal auditId={id} />;
+        console.log('View details for audit with id: ', id);
+        return Modal.info({
+            title: 'Audit Information', 
+            content: <AuditInfoModal auditId={id} />,
+            footer: null,
+            closable: true,
+            icon: null,
+        });
     };
 
-    const handleGoToCharts = (id: number) => {
-        // Go to charts logic here
+    const handleGoToCharts = (audit: AuditInformationTable) => {
+         
+        return Modal.info({
+            title: audit.auditName + ' Chart', 
+            content: <ChartAudits audit={audit} />,
+            footer: null,
+            closable: true,
+            icon: null,
+        });
     };
 
     return (
         <div>
             <h1>Audits</h1>
-            <Table dataSource={audits} columns={columns} />
+            <Table dataSource={audits} columns={columns} pagination={false} />
         </div>
     );
 };

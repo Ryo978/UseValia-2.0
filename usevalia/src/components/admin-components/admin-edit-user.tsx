@@ -1,7 +1,8 @@
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input, Select, message } from "antd";
 import AlertComponent from "../Alert-Component";
 import { User } from "../Entities/User";
 import { updateRol, updateUser } from "../../connections/user-connection";
+import { useEffect } from "react";
 
 enum Role {
     ADMIN = 'Admin',
@@ -9,23 +10,32 @@ enum Role {
 }
 
 const EditUserFromAdmin: React.FC<{ user?: User }> = ({ user }) => {
+
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+        if (user) {
+            form.setFieldsValue(user);
+        }
+    }, [user, form]);
     
-    const onFinish = (values: any) => {
+    const onFinish = async (values: any) => {
         try {
-            updateUser(user?.id as number, user?.nombre as string, values.password);
-            updateRol(user?.id as number, values.rol)
+            await updateUser(user?.id as number, user?.nombre as string, values.password);
+            await updateRol(user?.id as number, values.rol.toLowerCase() as string);
+            window.location.reload();
         } catch (error:any) {
-            return AlertComponent(error.message);
+            message.error('Updating user failed');
         }
     };
 
     return (
-        <Form onFinish={onFinish} initialValues={user}>
+        <Form onFinish={onFinish} form={form}>
             <Form.Item
                 label="Nombre"
                 name="nombre"
             >
-                <Input contentEditable={false} />
+                <Input disabled={true} />
             </Form.Item>
 
             <Form.Item
@@ -47,7 +57,7 @@ const EditUserFromAdmin: React.FC<{ user?: User }> = ({ user }) => {
             </Form.Item>
             
             <Form.Item>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" onClick={onFinish}>
                     Submit
                 </Button>
             </Form.Item>

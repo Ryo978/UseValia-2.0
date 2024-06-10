@@ -1,5 +1,5 @@
 export interface Catalog {
-    id: number | undefined;
+    id: number;
     nombre: string;
     esquemaid: number;
     autorid: number;

@@ -28,8 +28,8 @@ public class EsquemaPuntuacionController {
     }
     @DeleteMapping
     @RequestMapping("/delete")
-    public void deleteEsquemaPuntuacion(@RequestBody EsquemaPuntuacion esquemaPuntuacion) {
-        service.deleteEsquemaPuntuacion(esquemaPuntuacion);
+    public void deleteEsquemaPuntuacion(@RequestParam Long id) {
+        service.deleteEsquemaPuntuacion(id);
     }
     @GetMapping
     @RequestMapping("/get")

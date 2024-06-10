@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import um.es.usevalia.mapper.GrupoMapper;
+import um.es.usevalia.mapper.GrupoMapperImpl;
 import um.es.usevalia.model.Grupo;
 import um.es.usevalia.model.dto.GrupoDTO;
 import um.es.usevalia.service.GrupoService;
@@ -17,6 +18,8 @@ public class GrupoController {
     @Autowired
     GrupoService grupoService;
 
+    GrupoMapper mapper = new GrupoMapperImpl();
+
     @PostMapping
     @RequestMapping("/add")
     public void addGrupo(@RequestBody GrupoDTO grupo){
@@ -25,15 +28,15 @@ public class GrupoController {
 
     @DeleteMapping
     @RequestMapping("/delete")
-    public void deleteGrupo(@RequestBody GrupoDTO grupo){
-        grupoService.deleteGrupo(grupo);
+    public void deleteGrupo(@RequestParam Long id){
+        grupoService.deleteGrupo(id);
     }
 
     @GetMapping
     @RequestMapping("/get")
     public ResponseEntity<GrupoDTO> getGrupo(@RequestParam Long id){
         Grupo grupo = grupoService.getGrupo(id);
-        return ResponseEntity.ok(GrupoMapper.INSTANCE.grupoToGrupoDTO(grupo));
+        return ResponseEntity.ok(mapper.grupoToGrupoDTO(grupo));
     }
 
     @GetMapping

@@ -23,8 +23,8 @@ public class EsquemaPuntuacionService {
         return esquemaPuntuacionRepository.save(esquemaPuntuacion).getId();
     }
 
-    public void deleteEsquemaPuntuacion(EsquemaPuntuacion esquemaPuntuacion) {
-        esquemaPuntuacionRepository.delete(esquemaPuntuacion);
+    public void deleteEsquemaPuntuacion(Long esquemaPuntuacion) {
+        esquemaPuntuacionRepository.deleteById(esquemaPuntuacion);
     }
 
     public List<EsquemaPuntuacion> listEsquemaPuntuacion() {

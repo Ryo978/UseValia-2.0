@@ -2,11 +2,12 @@ package um.es.usevalia.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import um.es.usevalia.model.GrupoDirectrices;
 
 import java.util.List;
 
 public interface GrupoDirectricesRepository extends JpaRepository<GrupoDirectrices, Long> {
-    @Query("SELECT gd FROM Catalogo c JOIN c.grupo gd WHERE c.id = ?1")
-    List<GrupoDirectrices> findByCatalogo_Id(Long catalogoId);
+    @Query("SELECT gd FROM GrupoDirectrices gd WHERE gd.catalogo.id = :catalogoid")
+    List<GrupoDirectrices> findByCatalogo_Id(@Param("catalogoid") Long catalogoId);
 }

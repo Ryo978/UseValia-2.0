@@ -35,6 +35,18 @@ public class CatalogoController {
         return ResponseEntity.ok(list);
     }
 
+    @GetMapping("/listByLectura")
+    public ResponseEntity<List<CatalogoDTO>> listCatalogoByLectura(@RequestParam Long userId){
+        List<CatalogoDTO> list = service.listCatalogoByLectura(userId);
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/listByEscritura")
+    public ResponseEntity<List<CatalogoDTO>> listCatalogoByEscritura(@RequestParam Long userId){
+        List<CatalogoDTO> list = service.listCatalogoByEscritura(userId);
+        return ResponseEntity.ok(list);
+    }
+
     @GetMapping
     @RequestMapping("/get")
     public ResponseEntity<CatalogoDTO> getCatalogo(@RequestParam Long catalogoId){

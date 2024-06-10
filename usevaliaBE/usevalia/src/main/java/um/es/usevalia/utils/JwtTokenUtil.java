@@ -7,7 +7,7 @@ import java.util.Base64;
 import java.util.Date;
 
 public class JwtTokenUtil {
-    private static final String SECRET_KEY = generateRandomSecretKey(32); // Clave secreta para firmar el token
+    private static final String SECRET_KEY = generateRandomSecretKey(150); // Clave secreta para firmar el token
 
     public static String generateToken(String username) {
         Date now = new Date();

@@ -7,24 +7,23 @@ import org.mapstruct.factory.Mappers;
 import um.es.usevalia.model.Aplicacion;
 import um.es.usevalia.model.Catalogo;
 import um.es.usevalia.model.dto.AplicacionDTO;
+import um.es.usevalia.model.enums.Categoria;
+import um.es.usevalia.model.enums.Permiso;
 import um.es.usevalia.service.CatalogoService;
 
 @Mapper
 public interface AplicacionMapper {
 
-    AplicacionMapper INSTANCE = Mappers.getMapper(AplicacionMapper.class);
-
-    CatalogoService catalogoService = new CatalogoService();
 
     @Mapping(target = "id", ignore = false)
-    @Mapping(target = "catalogoId", source = "catalogo.id")
+    @Mapping(target = "categoria", source = "categoria.codigo")
     AplicacionDTO aplicacionToAplicacionDTO(Aplicacion aplicacion);
 
-    @Mapping(source = "catalogoId", target = "catalogo", qualifiedByName = "findByIdCatalogo")
+    @Mapping(source = "categoria", target = "categoria", qualifiedByName = "getCategoria")
     Aplicacion aplicacionDTOToAplicacion(AplicacionDTO aplicacionDTO);
 
-    @Named("findByIdCatalogo")
-    default Catalogo findByIdCatalogo(Long catalogoId) {
-        return catalogoService.getCatalogo(catalogoId);
+    @Named("getCategoria")
+    default Categoria getCategoria(String categoria) {
+        return Categoria.fromString(categoria);
     }
 }

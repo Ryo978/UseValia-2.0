@@ -21,9 +21,6 @@ public class DirectrizDTO {
     private String descripcion;
 
     private int peso;
-
-    private Long padreId;
-
     private Long grupoId;
 
     private Long esquemaId;

@@ -1,11 +1,21 @@
 package um.es.usevalia.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import um.es.usevalia.chart.GuidelinesPieChart;
+import um.es.usevalia.chart.ScoreGuidelineChart;
 import um.es.usevalia.model.dto.AuditoriaDTO;
 import um.es.usevalia.service.AuditoriaService;
+import com.itextpdf.layout.Document;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 @RestController
@@ -41,7 +51,7 @@ public class AuditoriaController {
 
     @PostMapping
     @RequestMapping("/add")
-    public ResponseEntity<AuditoriaDTO> addAuditoria(@RequestParam AuditoriaDTO auditoriaDTO) {
+    public ResponseEntity<AuditoriaDTO> addAuditoria(@RequestBody AuditoriaDTO auditoriaDTO) {
         return ResponseEntity.ok(service.addAuditoria(auditoriaDTO));
     }
     @GetMapping
@@ -62,9 +72,40 @@ public class AuditoriaController {
         service.openAudit(id);
     }
 
-    //TODO: evaluación auditoria, sacar report de la auditoria.
+    @GetMapping
+    @RequestMapping("/getAuditReport")
+    public ResponseEntity<InputStreamResource> getAuditReport(@RequestParam Long id) throws FileNotFoundException {
+        String filename = "Audit report.pdf";
+        service.getAuditReport(id, filename);
+        File file = new File(filename);
 
+        if (!file.exists()) {
+            throw new FileNotFoundException("El archivo no se ha encontrado: " + filename);
+        }
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=report.pdf");
+
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(resource);
+    }
+
+    @GetMapping
+    @RequestMapping("/getPieChart")
+    public ResponseEntity<GuidelinesPieChart> getPieChart(@RequestParam Long id) {
+        return ResponseEntity.ok(service.getPieChart(id));
+    }
+
+    @GetMapping
+    @RequestMapping("/getScoreChart")
+    public ResponseEntity<ScoreGuidelineChart> getScoreChart(@RequestParam Long id) {
+        return ResponseEntity.ok(service.getScoreChart(id));
+    }
 
 
 }

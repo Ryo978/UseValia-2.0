@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Select, Table } from 'antd';
+import { Form, Input, Button, Select, Table, Modal, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { ScoreSchema } from '../Entities/ScoreSchema';
 import { addScoreValue, schemaAdd } from '../../connections/score-scale-connection';
@@ -81,24 +81,31 @@ const ScoreAddForm: React.FC = () => {
   const onFinish = async(values: FormData) => {
     let schemaID: number;
     let schema: ScoreSchema = {
-        id: undefined,
+        id: 0,
         nombre: values.scoreName,
         descripcion: values.description,
         };
     try {
         schemaID = await schemaAdd(schema);
-        let scoresValues: ScoreValue[] = values.scores.map((score: Score) => {
+        let scoresValues: ScoreValue[] = scores.map((score: Score) => {
             return {
-                id: undefined,
+                id: 0,
                 escalaId: schemaID,
                 nombre: score.value,
                 tipo: score.type === 'pass' ? true : false
             };
         });
-        addScoreValue(scoresValues);
+        await addScoreValue(scoresValues);
+        Modal.success({
+            title: 'Score added',
+            content: 'The score has been added successfully',
+            onOk() {
+                window.location.reload();
+            }
+        });
 
     } catch (error:any) {
-        return AlertComponent(error.message);
+        message.error('Adding score failed');
     }
 
   };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Space, Modal, Input } from 'antd';
+import { Table, Button, Space, Modal, Input, message } from 'antd';
 import { DeleteOutlined, EditOutlined, FilterOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { clearUser, setUser } from '../../redux/actions';
@@ -8,27 +8,32 @@ import AppConnection from '../../connections/apps-connection';
 import EditApp from './edit-app';
 import AlertComponent from '../Alert-Component';
 import { User } from '../Entities/User';
+import CancelButton from '../components-utils/cancelButton';
 
 
 const AppPage: React.FC<{ user: User, setUser: any }> = ({ user, setUser}) => {
     const [applications, setApplications] = useState<Application[]>([]);
+    const [searched, setSearched] = useState<boolean>(false);
     const [filteredApplications, setFilteredApplications] = useState<Application[]>([]);
     const [searchText, setSearchText] = useState<string>(''); // Estado para almacenar el texto de búsqueda
     const [filtered, setFiltered] = useState<boolean>(false); // Estado para indicar si se está aplicando un filtro
 
     useEffect(() => {
-        if (applications.length === 0) {
+        if ((applications.length === 0 && !searched) || (applications.length !== filteredApplications.length)) {
             try{
                 AppConnection.list().then((data:Application[]) => {
                     setApplications(data);
                     setFilteredApplications(data);
+                    setSearched(true);
                 });
             } catch (error:any) {
-                AlertComponent(error.message);
+                message.error('Loading applications failed');
             }
 
         }
-    }, [applications]);
+    }, [applications, searched]);
+
+   
 
     // Función para filtrar aplicaciones por nombre
     const handleSearch = () => {
@@ -42,21 +47,24 @@ const AppPage: React.FC<{ user: User, setUser: any }> = ({ user, setUser}) => {
         setSearchText(e.target.value);
     };
 
-    const handleDelete = (id: number) => {
+    const handleDelete = async (id: number) => {
         let editable = false;
-        AppConnection.isEditable(id as number).then((data) => {
+        await AppConnection.isEditable(id as number).then((data) => {
             editable = data;
         });
         if (editable){
             Modal.confirm({
                 title: 'Eliminar Aplicación',
-                content: '¿Estás seguro de que quieres eliminar esta aplicación?',
-                onOk() {
-                AppConnection.deleteApp(id).then(() => {
-                    setApplications(applications.filter(app => app.id !== id));
-                });
-                },
-            });
+                content: 'Are you sure you want to delete this application?',
+                async onOk() {
+                    try{
+                        await AppConnection.deleteApp(id).then(() => {
+                        setApplications(applications.filter(app => app.id !== id));
+                    });
+                } catch (error:any) {
+                    message.error('Failed to delete application');
+                }
+            }});
         }else{
             Modal.warning ({
                 title: 'Aplicación en uso',
@@ -67,14 +75,18 @@ const AppPage: React.FC<{ user: User, setUser: any }> = ({ user, setUser}) => {
     }
 
     const handleAdd = () => {
-        return <Modal title="Add Application"  footer={null}>
-            <EditApp />
-        </Modal>
+        return Modal.info({
+            title: 'Add Application',
+            content: <EditApp />,
+            footer: null,
+            closable: true,
+            icon: null
+        });
     }
 
-    const handleEdit = (app: Application) => {    
+    const handleEdit = async(app: Application) => {    
         let editable = false;
-        AppConnection.isEditable(app.id as number).then((data) => {
+        await AppConnection.isEditable(app.id as number).then((data) => {
             editable = data;
         });
         if (!editable){
@@ -83,9 +95,13 @@ const AppPage: React.FC<{ user: User, setUser: any }> = ({ user, setUser}) => {
                 content: 'No se puede editar una aplicación en uso.',
             });
         } else{
-            return <Modal title="Edit Application"  footer={null}>
-                <EditApp app={app} />
-            </Modal>
+            return Modal.info({
+                title: 'Edit Application',
+                content: <EditApp app={app} />,
+                footer: null,
+                closable: true,
+                icon: null
+            });
         }
     }
 
@@ -158,7 +174,7 @@ const AppPage: React.FC<{ user: User, setUser: any }> = ({ user, setUser}) => {
         <div>
             <h1>Apps</h1>
             <Button type="primary" onClick={() => handleAdd()}>Add App</Button>
-            <Table columns={columns} dataSource={filteredApplications} />
+            <Table columns={columns} dataSource={filteredApplications} pagination={false} />
         </div>
     );
 };

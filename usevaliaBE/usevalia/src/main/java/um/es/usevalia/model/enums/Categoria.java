@@ -3,7 +3,7 @@ package um.es.usevalia.model.enums;
 public enum Categoria {
 
     BUSCADORES("Buscadores/Portales"),
-    BLOGS("Blogs/informativas"),
+    BLOGS("Blogs/Informativas"),
     FOROS("Foros/Interacción"),
     REDES_SOCIALES("Redes sociales"),
     TRANSACIONALES("Transacionales"),

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import um.es.usevalia.config.PasswordConverter;
 
 import java.util.Date;
 
@@ -24,6 +25,7 @@ public class Usuario {
     private String nombre;
 
     @Column(name = "PASSWORD", length = 50, nullable = false)
+    @Convert(converter = PasswordConverter.class)
     private String password;
 
     @Column(name = "EMAIL", length = 80, nullable = false, unique = true)
@@ -37,6 +39,12 @@ public class Usuario {
 
     @Column(name = "CHANGED")
     private Date changed;
+
+    @Column(name = "TEMPORARY_ENABLED")
+    private boolean temporaryEnabled;
+
+    @Column(name = "TEMPORARY_PASSWORD")
+    private String temporaryPassword;
 
 
     public Usuario(String nombre, String password, String email) {

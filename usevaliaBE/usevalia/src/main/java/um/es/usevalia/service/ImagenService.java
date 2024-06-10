@@ -10,8 +10,8 @@ public class ImagenService {
 
     @Autowired
     private ImagenRepository repository;
-    public void addImagen(Imagen imagen) {
-        repository.save(imagen);
+    public Imagen addImagen(Imagen imagen) {
+        return repository.save(imagen);
     }
 
     public void deleteImagen(Imagen imagen) {
@@ -20,5 +20,9 @@ public class ImagenService {
 
     public Imagen getImagen(Long id) {
         return repository.findById(id).orElse(null);
+    }
+
+    public Imagen getImagenByPuntuacion(Long idPuntuacion) {
+        return repository.findByPuntuacionId(idPuntuacion);
     }
 }

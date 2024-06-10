@@ -48,7 +48,7 @@ const EditApp: React.FC<{ app?: Application }> = ({ app }) => {
             <Form.Item
                 label="App name"
                 name="nombre"
-                rules={[{ required: true, message: 'Por favor ingresa el nombre de la aplicación' }]}
+                rules={[{ required: true, message: 'Please add the application\'s name' }]}
             >
                 <Input />
             </Form.Item>
@@ -56,14 +56,14 @@ const EditApp: React.FC<{ app?: Application }> = ({ app }) => {
             <Form.Item
                 label="Description"
                 name="descripcion"
-                rules={[{ required: true, message: 'Por favor ingresa una descripción' }]}
+                rules={[{ required: true, message: 'Please add a description' }]}
             >
                 <Input.TextArea />
             </Form.Item>
             <Form.Item
                 label="URL"
                 name="url"
-                rules={[{ required: true, message: 'Por favor ingresa la url de la aplicación' }]}
+                rules={[{ required: true, message: 'Please add an URL' }]}
             >
                 <Input />
             </Form.Item>
@@ -71,12 +71,12 @@ const EditApp: React.FC<{ app?: Application }> = ({ app }) => {
             <Form.Item
                 label="Category"
                 name="categoria"
-                rules={[{ required: true, message: 'Por favor selecciona una categoría' }]}
+                rules={[{ required: true, message: 'Please Select a Category' }]}
             >
                 <Select>
-                    {Object.values(Categoria).map((category) => (
-                        <Select.Option key={category} value={category}>
-                            {category}
+                    {Object.values(Categoria).filter(value => typeof value === 'string').map((category) => (
+                        <Select.Option value={category}>
+                            {category.toString()}
                         </Select.Option>
                     ))}
                 </Select>

@@ -1,20 +1,20 @@
 package um.es.usevalia.model.enums;
 
 public enum Categoria {
-
-    BUSCADORES("Buscadores/Portales"),
-    BLOGS("Blogs/Informativas"),
-    FOROS("Foros/Interacción"),
-    REDES_SOCIALES("Redes sociales"),
-    TRANSACIONALES("Transacionales"),
-    COMERCIO_ELECTRONICO("Comercio electrónico"),
-    CORREO_ELECTRONICO("Correo electrónico"),
-    ENTRETENIMIENTO("Entretenimiento"),
-    ACADEMICO("Académico"),
-    COLABORATIVAS("Colaborativas"),
-    DESCARGAS("Descargas"),
-    CORPORATIVA("Corporativa/Entidades públicas"),
-    SERVICIOS("Servicios");
+    
+    BUSCADORES("Search Engines/Portals"),
+    BLOGS("Blogs/Informative"),
+    FOROS("Forums/Interaction"),
+    REDES_SOCIALES("Social Networks"),
+    TRANSACIONALES("Transactional"),
+    COMERCIO_ELECTRONICO("E-commerce"),
+    CORREO_ELECTRONICO("Email"),
+    ENTRETENIMIENTO("Entertainment"),
+    ACADEMICO("Academic"),
+    COLABORATIVAS("Collaborative"),
+    DESCARGAS("Downloads"),
+    CORPORATIVA("Corporate/Public Entities"),
+    SERVICIOS("Services");
 
 
     private final String codigo;

@@ -1,7 +1,7 @@
 package um.es.usevalia.model.enums;
 
 public enum Categoria {
-    
+
     BUSCADORES("Search Engines/Portals"),
     BLOGS("Blogs/Informative"),
     FOROS("Forums/Interaction"),

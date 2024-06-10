@@ -1,7 +1,7 @@
 export enum Priority {
-    LOW = 'Bajo',
-    MEDIUM = 'Medio',
-    HIGH = 'Alto',
+    LOW = 'Low',
+    MEDIUM = 'Medium',
+    HIGH = 'High',
 }
 
 export const turnPesoIntoPriority = (peso: number): Priority => {

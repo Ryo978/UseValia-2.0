@@ -116,7 +116,7 @@ const AuditsPage: React.FC<{ user: User, audit: number, setAudit: any }> = ({ us
                             <Button icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} />
                         </Tooltip>
                     )}
-                    { ((user.rol !== 'admin' || record.administradorid === user.id) 
+                    { ((user.rol === 'admin' || record.administradorid === user.id) 
                             && record.evaluationStatus === 'Completed') && (
                         <>
                             <Tooltip title="Close Audit">
@@ -207,6 +207,7 @@ const AuditsPage: React.FC<{ user: User, audit: number, setAudit: any }> = ({ us
             footer: null,
             closable: true,
             icon: null,
+            width: '40%'
         });
     };
 
@@ -218,6 +219,7 @@ const AuditsPage: React.FC<{ user: User, audit: number, setAudit: any }> = ({ us
             footer: null,
             closable: true,
             icon: null,
+            width: '30%'
         });
     };
 

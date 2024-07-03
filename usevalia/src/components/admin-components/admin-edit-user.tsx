@@ -23,7 +23,7 @@ const EditUserFromAdmin: React.FC<{ user?: User }> = ({ user }) => {
         try {
             await updateUser(user?.id as number, user?.nombre as string, values.password);
             await updateRol(user?.id as number, values.rol.toLowerCase() as string);
-            window.location.reload();
+            //window.location.reload();
         } catch (error:any) {
             message.error('Updating user failed');
         }

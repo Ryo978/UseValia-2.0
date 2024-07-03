@@ -33,8 +33,8 @@ public class AuditoriaController {
 
     @GetMapping
     @RequestMapping("/listByUser")
-    public ResponseEntity<List<AuditoriaDTO>> listByUser(@RequestParam Long userId) {
-        return ResponseEntity.ok(service.listByUser(userId));
+    public ResponseEntity<List<AuditoriaDTO>> listByUser(@RequestParam Long id) {
+        return ResponseEntity.ok(service.listByUser(id));
     }
 
     @DeleteMapping

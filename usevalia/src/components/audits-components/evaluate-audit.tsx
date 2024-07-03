@@ -189,7 +189,7 @@ const EvaluateAudit: React.FC<{ user: User, auditId: number }> = ({ user, auditI
 
     const handleSave = async () => {
         scoreGuidelines.forEach(async (score) => {
-            if (score.puntuacion !== '' && (score.observacion !== '' || score.mejora !== '' || score.imagen !== null))
+            if (score.puntuacion !== '')
                 await save(score);
         });
         navigate('/audits');

@@ -1,3 +1,4 @@
+//export const HEAD_URL = 'http://25.67.145.93:8085/api';
 export const HEAD_URL = 'http://localhost:8085/api';
 export const loginURL = HEAD_URL + '/usuario/login';
 export const registerURL = HEAD_URL + '/usuario/register';

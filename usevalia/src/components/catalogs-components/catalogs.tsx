@@ -80,6 +80,7 @@ const CatalogsPage: React.FC<{ user: User }> = ({ user}) => {
             footer: null,
             closable: true,
             icon: null,
+            width: '50%'
         });
     };
 

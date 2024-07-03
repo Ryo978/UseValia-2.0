@@ -239,7 +239,7 @@ const CreateAudit: React.FC<{ user: User }> = ({ user }) => {
                     <DatePicker />
                 </Form.Item>
 
-                <Form.Item name="app" label="Choose an app">
+                <Form.Item name="app" label="Choose an app" rules={[{ required: true }]}>
                     {SelectApps()}
                 </Form.Item>
 
@@ -257,7 +257,7 @@ const CreateAudit: React.FC<{ user: User }> = ({ user }) => {
                             rowSelectionCatalog
                         }
                         columns={catalogColumn}
-                        dataSource={catalogs}
+                        dataSource={catalogs?.map((catalog: Catalog_for_list) => ({...catalog, key: catalog.id}))}
                         pagination={false}
                     />
                 </Form.Item>

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,12 +18,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,14 +63,7 @@ public class SecurityConfig {
                                 .permitAll()
                 )*/
                 .logout(LogoutConfigurer::permitAll )
-                .cors(corsFilter -> corsFilter.configurationSource(request -> {
-                    CorsConfiguration cors = new CorsConfiguration();
-                    cors.setAllowedOrigins(Collections.singletonList("*"));
-                    cors.setAllowedMethods(Collections.singletonList("*"));
-                    cors.setAllowedHeaders(Collections.singletonList("*"));
-                    cors.setExposedHeaders(Collections.singletonList("*"));
-                    return cors;
-                }))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }
@@ -101,12 +97,15 @@ public class SecurityConfig {
         log.info("CorsFilter enabled with allowed headers: " + allowedHeaders.toString() + " and allowed origins: *");
         return new CORSFilter(source);
     }
+
+    @Bean
+    @Primary
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.applyPermitDefaultValues();
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**",configuration);
+        return source;
+    }
 }
-        /*http
-        .authorizeHttpRequests(authorizeRequests ->
-        authorizeRequests
-        .requestMatchers("/resources/**", "/usuario/register", "/about").permitAll()
-        .requestMatchers("/admin/**").hasRole(ADMIN)
-        .requestMatchers("/db/**").hasRole(ADMIN)
-        .anyRequest().authenticated()
-        )*/
